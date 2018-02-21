@@ -30,21 +30,28 @@
 <body class="hold-transition skin-red sidebar-mini">
     <div id="app">
         <div class="wrapper">
-
-            <!-- Header -->
-            @include('layouts/header')
+           @if (Auth::guest())
+                <script type="text/javascript">
+                    window.location = "{{ route('login') }}";
+                </script>
+            @else
+                <!-- Header -->
+                @include('layouts/header')
+                
+                <!-- Sidebar -->
+                @include('layouts/sidebar')
+                
+                <!-- Content Wrapper. Contains page content -->
+                <div class="content-wrapper">
+                    @yield('content')
+                </div>
+                <!-- /.content-wrapper -->
+                
+                <!-- footer -->
+                @include('layouts/footer')
+            @endif
             
-            <!-- Sidebar -->
-            @include('layouts/sidebar')
             
-            <!-- Content Wrapper. Contains page content -->
-            <div class="content-wrapper">
-                @yield('content')
-            </div>
-            <!-- /.content-wrapper -->
-            
-            <!-- footer -->
-            @include('layouts/footer')
                 
         </div>
         <!-- ./wrapper -->
