@@ -5,7 +5,7 @@
     <section class="sidebar">
       <!-- Sidebar Menu -->
       <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">Menu</li>
+        <!-- <li class="header">Menu</li> -->
         <!-- Optionally, you can add icons to the links -->
         <li><a href="/"><i class="fa fa-home"></i> <span>Home</span></a></li>
         <li><a href="#"><i class="fa fa-users"></i> <span>Participation</span></a></li>

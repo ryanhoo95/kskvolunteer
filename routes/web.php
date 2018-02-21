@@ -19,3 +19,5 @@
 Route::get('/', 'PagesController@index');
 
 Auth::routes();
+
+Route::resource('profile', 'ProfileController');
