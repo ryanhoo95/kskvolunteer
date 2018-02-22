@@ -18,6 +18,8 @@
 
 Route::get('/', 'PagesController@index');
 
+Route::get('logout', 'LoginController@logout');
+
 Auth::routes();
 
 Route::resource('profile', 'ProfileController');
