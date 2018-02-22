@@ -15,7 +15,7 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
-            <img src="storage/profile_image/no_image.png" class="profile-user-img img-responsive img-circle" alt="User Image" />
+            <img src="/storage/profile_image/{{ Auth::user()->profileImage }}" class="profile-user-img img-responsive img-circle" alt="User Image" />
 
             <br/>
 
@@ -53,12 +53,12 @@
 
                                 <tr>
                                     <td><b>Date of Birth</b></td>
-                                    <td>{{ date('d M Y', strtotime(Auth::user()->dateOfBirth)) }}</td>
+                                    <td>{{ Carbon::parse(Auth::user()->dateOfBirth)->format('d M Y') }}</td>
                                 </tr>
 
                                 <tr>
                                     <td><b>Date of Joining</b></td>
-                                    <td>{{ date('d M Y', strtotime(Auth::user()->created_at)) }}</td>
+                                    <td>{{ Carbon::parse(Auth::user()->created_at)->format('d M Y') }}</td>
                                 </tr>
 
                                 <tr>
@@ -76,7 +76,7 @@
                         <!-- footer -->
                         <div class="box-footer">
                             <a href="#" class="btn btn-default"><i class="fa fa-expeditedssl"></i><span> Reset Password</span></a>
-                            <a href="#" class="btn btn-primary pull-right"><i class="fa fa-edit"></i><span> Edit</span></a>
+                            <a href="/profile/{{ Auth::user()->userID }}/edit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i><span> Edit</span></a>
                         </div>
                             
                             

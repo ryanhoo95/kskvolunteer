@@ -22,6 +22,14 @@
             page. However, you can choose any other skin. Make sure you
             apply the skin class to the body tag so the changes take effect. -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/dist/css/skins/skin-red.min.css")}}">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/select2/dist/css/select2.min.css")}}">
+    <!-- daterange picker -->
+    <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/bootstrap-daterangepicker/daterangepicker.css")}}">
+    <!-- bootstrap datepicker -->
+    <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css")}}">
+    <!-- iCheck for checkboxes and radio inputs -->
+     <link rel="stylesheet" href="{{asset("css/admin-lte/plugins/iCheck/all.css")}}">
 
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
@@ -64,6 +72,24 @@
         <script src="{{asset("css/admin-lte/bower_components/bootstrap/dist/js/bootstrap.min.js")}}"></script>
         <!-- AdminLTE App -->
         <script src="{{asset("css/admin-lte/dist/js/adminlte.min.js")}}"></script>
+        <!-- Select2 -->
+        <script src="{{asset("css/admin-lte/bower_components/select2/dist/js/select2.full.min.js")}}"></script>
+        <!-- date-range-picker -->
+        <script src="{{asset("css/admin-lte/bower_components/moment/min/moment.min.js")}}"></script>
+        <script src="{{asset("css/admin-lte/bower_components/bootstrap-daterangepicker/daterangepicker.js")}}"></script>
+        <!-- bootstrap datepicker -->
+        <script src="{{asset("css/admin-lte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script>
+        <!-- iCheck 1.0.1 -->
+        <script src="{{asset("css/admin-lte/plugins/iCheck/icheck.min.js")}}"></script>
+
+        <script type="text/javascript">
+            $(function () {
+                $('#datepicker').datepicker({
+                    autoclose: true,
+                    format: 'dd M yyyy'
+                })
+            })
+        </script>
     </div>
 </body>
 </html>
