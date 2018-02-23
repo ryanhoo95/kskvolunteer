@@ -23,3 +23,5 @@ Route::get('logout', 'Auth\LoginController@logout');
 Auth::routes();
 
 Route::resource('profile', 'ProfileController');
+
+Route::get('/reset_password', 'ProfileController@resetPassword');

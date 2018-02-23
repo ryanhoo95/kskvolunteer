@@ -11,6 +11,7 @@
         <h1>
             Edit My Profile
         </h1>
+        
         {{--  <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
             <li class="active">Here</li>
@@ -73,7 +74,7 @@
 
                                     @if ($errors->has('gender'))
                                         <span class="help-block">
-                                            *{{ $errors->first('full_name') }}
+                                            *{{ $errors->first('gender') }}
                                         </span>
                                     @endif
                                 </div>
@@ -90,7 +91,7 @@
 
                                     @if ($errors->has('date_of_birth'))
                                         <span class="help-block">
-                                            *{{ $errors->first('full_name') }}
+                                            *{{ $errors->first('date_of_birth') }}
                                         </span>
                                     @endif
                                 </div>
@@ -102,7 +103,7 @@
 
                                     @if ($errors->has('phone_no'))
                                         <span class="help-block">
-                                            *{{ $errors->first('full_name') }}
+                                            *{{ $errors->first('phone_no') }}
                                         </span>
                                     @endif
                                 </div>
@@ -114,10 +115,12 @@
 
                                     @if ($errors->has('address'))
                                         <span class="help-block">
-                                            *{{ $errors->first('full_name') }}
+                                            *{{ $errors->first('address') }}
                                         </span>
                                     @endif
                                 </div>
+
+                                {{Form::hidden('pss', Auth::user()->password)}}
                             </div>
 
                             <!-- box footer -->

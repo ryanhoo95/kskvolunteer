@@ -79,7 +79,7 @@
 
                         <!-- footer -->
                         <div class="box-footer">
-                            <a href="#" class="btn btn-default"><i class="fa fa-expeditedssl"></i><span> Reset Password</span></a>
+                            <a href="/reset_password" class="btn btn-default"><i class="fa fa-expeditedssl"></i><span> Reset Password</span></a>
                             <a href="/profile/{{ Auth::user()->user_id }}/edit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i><span> Edit</span></a>
                         </div>
                             

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\User;
-use \Carbon\Carbon;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -71,6 +72,9 @@ class ProfileController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if(!Hash::check($request->input('full_name'), '123')) {
+            return back()->with('error', 'pss');
+        }
         //validation
         $rules = [
             'profile_image' => 'image|nullable|max:1999',
@@ -78,13 +82,14 @@ class ProfileController extends Controller
             'full_name' => 'required',
             'gender' => 'required',
             'date_of_birth' => 'required',
-            'phone_no' => 'required',
+            'phone_no' => 'required|numeric',
             'address' => 'required',
         ];
 
         $messages = [
             'required' => 'Please fill out this field.',
-            'profile_image.max' => 'Please make sure the size of the image is less than 2MB.'
+            'profile_image.max' => 'Please make sure the size of the image is less than 2MB.',
+            'phone_no.numeric' => 'The contact no. can only contain numbers.',
         ];
 
         $request->validate($rules, $messages);
@@ -118,6 +123,13 @@ class ProfileController extends Controller
 
 
         return redirect('/profile');
+    }
+
+    /**
+     * Show the form for reset password
+     */
+    public function resetPassword() {
+        return view('/profile.reset_password');
     }
 
     /**
