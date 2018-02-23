@@ -19,7 +19,7 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
-            <img src="/storage/profile_image/{{ Auth::user()->profile_image }}" class="profile-user-img img-responsive img-circle" alt="User Image" />
+            <img src="/storage/profile_image/{{ Auth::user()->profile_image }}" class="profile-user-img img-responsive" alt="User Image" />
 
             <br/>
 

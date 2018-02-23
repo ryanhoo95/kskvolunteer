@@ -35,7 +35,7 @@
             <form method="POST" action="{{ route('login') }}">
                     {{ csrf_field() }}
 
-                <div class="form-group has-feedback" {{ $errors->has('email') ? ' has-error' : '' }}>
+                <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
                     <input type="email" class="form-control" name="email" placeholder="Email" value="{{ old('email') }}" required autofocus>
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
 
