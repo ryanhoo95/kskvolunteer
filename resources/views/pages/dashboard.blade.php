@@ -1,7 +1,10 @@
-
-@extends('layouts.app')
-
-@section('content')
+@if (Auth::guest())
+    <script type="text/javascript">
+        window.location = "{{ route('login') }}";
+    </script>
+@else
+    @extends('layouts.app')
+    @section('content')
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
@@ -20,4 +23,5 @@
 
         </section>
     <!-- /.content -->
-@endsection
+    @endsection
+@endif

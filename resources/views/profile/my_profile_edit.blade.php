@@ -1,6 +1,11 @@
-@extends('layouts.app')
+@if (Auth::guest())
+    <script type="text/javascript">
+        window.location = "{{ route('login') }}";
+    </script>
+@else
+    @extends('layouts.app')
 
-@section('content')
+    @section('content')
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
@@ -16,10 +21,11 @@
         <section class="content container-fluid">
             <img src="/storage/profile_image/{{ Auth::user()->profileImage }}" class="profile-user-img img-responsive img-circle" alt="User Image" />
             <br>
-
+            
             <div class="row">
-                <div class="col-md-4 col-md-offset-4">
+                <div class="col-md-6 col-md-offset-3">
                     <div class="box">
+                        
                         {!! Form::open(['action' => ['ProfileController@update', Auth::user()->userID], 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
 
                             <div class="box-body">
@@ -63,7 +69,12 @@
                                     {{Form::text('address', Auth::user()->address, ['class' => 'form-control', 'placeholder' => 'Enter your address.', 'maxLength' => 255])}}
                                 </div>
         
+                                
+                            </div>
+
+                            <div class="box-footer">
                                 {{Form::hidden('_method', 'PUT')}}
+                                <a href="/profile" class="btn btn-warning pull-left">Cancel</a>
                                 {{Form::submit('Submit', ['class' => 'btn btn-primary pull-right'])}}
                             </div>
                         {!! Form::close() !!}
@@ -74,4 +85,6 @@
             
         </section>
     <!-- /.content -->
-@endsection
+    @endsection
+@endif
+
