@@ -19,7 +19,7 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
-            <img src="/storage/profile_image/{{ Auth::user()->profileImage }}" class="profile-user-img img-responsive img-circle" alt="User Image" />
+            <img src="/storage/profile_image/{{ Auth::user()->profile_image }}" class="profile-user-img img-responsive img-circle" alt="User Image" />
 
             <br/>
 
@@ -28,7 +28,7 @@
                     <div class="box">
                         <!-- header -->
                         <div class="box-header text-center">
-                            <h3 class="box-title"> <b>{{ Auth::user()->profileName }}</b></h3>
+                            <h3 class="box-title"> <b>{{ Auth::user()->profile_name }}</b></h3>
                         </div>
 
                         <!-- body -->
@@ -36,12 +36,12 @@
                             <table class="table">
                                 <tr>
                                     <td style="width: 30%"><b>Full Name</b></td>
-                                    <td style="width: 70%">{{ Auth::user()->fullName }}</td>
+                                    <td style="width: 70%">{{ Auth::user()->full_name }}</td>
                                 </tr>
 
                                 <tr>
                                     <td><b>IC / Passport No.</b></td>
-                                    <td>{{ Auth::user()->icPassport }}</td>
+                                    <td>{{ Auth::user()->ic_passport }}</td>
                                 </tr>
 
                                 <tr>
@@ -57,7 +57,7 @@
 
                                 <tr>
                                     <td><b>Date of Birth</b></td>
-                                    <td>{{ Carbon::parse(Auth::user()->dateOfBirth)->format('d M Y') }}</td>
+                                    <td>{{ Carbon::parse(Auth::user()->date_of_birth)->format('d M Y') }}</td>
                                 </tr>
 
                                 <tr>
@@ -67,7 +67,7 @@
 
                                 <tr>
                                     <td><b>Contact No.</b></td>
-                                    <td>{{ Auth::user()->phoneNo }}</td>
+                                    <td>{{ Auth::user()->phone_no }}</td>
                                 </tr>
 
                                 <tr>
@@ -80,7 +80,7 @@
                         <!-- footer -->
                         <div class="box-footer">
                             <a href="#" class="btn btn-default"><i class="fa fa-expeditedssl"></i><span> Reset Password</span></a>
-                            <a href="/profile/{{ Auth::user()->userID }}/edit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i><span> Edit</span></a>
+                            <a href="/profile/{{ Auth::user()->user_id }}/edit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i><span> Edit</span></a>
                         </div>
                             
                             

@@ -23,17 +23,17 @@
             <!-- Menu Toggle Button -->
             <a href="" class="dropdown-toggle" data-toggle="dropdown">
               <!-- The user image in the navbar-->
-              <img src="/storage/profile_image/{{ Auth::user()->profileImage }}" class="user-image" alt="User Image">
+              <img src="/storage/profile_image/{{ Auth::user()->profile_image }}" class="user-image" alt="User Image">
               <!-- hidden-xs hides the username on small devices so only the image appears. -->
-              <span class="hidden-xs">{{ Auth::user()->profileName }}</span>
+              <span class="hidden-xs">{{ Auth::user()->profile_name }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
               <li class="user-header">
-                <img src="/storage/profile_image/{{ Auth::user()->profileImage }}" class="img-circle" alt="User Image">
+                <img src="/storage/profile_image/{{ Auth::user()->profile_image }}" class="img-circle" alt="User Image">
 
                 <p>
-                  {{ Auth::user()->fullName }}
+                  {{ Auth::user()->full_name }}
                   <small>Member since {{ Carbon::parse(Auth::user()->created_at)->format('d M, Y') }}</small>
                 </p>
               </li>

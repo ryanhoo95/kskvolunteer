@@ -10,10 +10,10 @@ class User extends Authenticatable
     use Notifiable;
 
     //table name
-    public $table = 'User';
+    public $table = 'user';
 
     //primary key
-    protected $primaryKey = 'userID';
+    protected $primaryKey = 'user_id';
 
     //Timestamps
     public $timestamps = true;

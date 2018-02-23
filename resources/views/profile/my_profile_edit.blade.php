@@ -19,29 +19,29 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
-            <img src="/storage/profile_image/{{ Auth::user()->profileImage }}" class="profile-user-img img-responsive img-circle" alt="User Image" />
+            <img src="/storage/profile_image/{{ Auth::user()->profile_image }}" class="profile-user-img img-responsive img-circle" alt="User Image" />
             <br>
             
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
                     <div class="box">
                         
-                        {!! Form::open(['action' => ['ProfileController@update', Auth::user()->userID], 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
+                        {!! Form::open(['action' => ['ProfileController@update', Auth::user()->user_id], 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
 
                             <div class="box-body">
                                 <div class="form-group">
-                                    {{Form::label('profileImage', 'Profile Image')}}
-                                    {{Form::file('cover_image')}}
+                                    {{Form::label('profile_image', 'Profile Image')}}
+                                    {{Form::file('profile_image')}}
                                 </div>
                                 
                                 <div class="form-group">
-                                    {{Form::label('profileName', 'Profile Name')}}
-                                    {{Form::text('title', Auth::user()->profileName, ['class' => 'form-control', 'placeholder' => 'Enter your profile name', 'maxLength' => 100])}}
+                                    {{Form::label('profile_name', 'Profile Name')}}
+                                    {{Form::text('profile_name', Auth::user()->profile_name, ['class' => 'form-control', 'placeholder' => 'Enter your profile name', 'maxLength' => 100])}}
                                 </div>
             
                                 <div class="form-group">
-                                    {{Form::label('fullName', 'Full Name')}}
-                                    {{Form::text('body', Auth::user()->fullName, ['class' => 'form-control', 'placeholder' => 'Enter your full name', 'maxLength' => 100])}}
+                                    {{Form::label('full_name', 'Full Name')}}
+                                    {{Form::text('full_name', Auth::user()->full_name, ['class' => 'form-control', 'placeholder' => 'Enter your full name', 'maxLength' => 100])}}
                                 </div>
 
                                 <div class="form-group">
@@ -50,18 +50,18 @@
                                 </div>
 
                                 <div class="form-group">
-                                    {{Form::label('dateOfBirth', 'Date of Birth')}}
+                                    {{Form::label('date_of_birth', 'Date of Birth')}}
                                     <div class="input-group date">
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                         </div>
-                                        {{Form::text('dateOfBirth', Carbon::parse(Auth::user()->dateOfBirth)->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker'])}}
+                                        {{Form::text('date_of_birth', Carbon::parse(Auth::user()->date_of_birth)->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker'])}}
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    {{Form::label('phoneNo', 'Contact No.')}}
-                                    {{Form::text('phoneNo', Auth::user()->phoneNo, ['class' => 'form-control', 'placeholder' => 'Enter your contact no.', 'maxLength' => 20])}}
+                                    {{Form::label('phone_no', 'Contact No.')}}
+                                    {{Form::text('phone_no', Auth::user()->phoneNo, ['class' => 'form-control', 'placeholder' => 'Enter your contact no.', 'maxLength' => 20])}}
                                 </div>
 
                                 <div class="form-group">

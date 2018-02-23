@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserType extends Model
 {
     //table name
-    protected $table = 'UserType';
+    protected $table = 'usertype';
 
     //primary key
-    protected $primaryKey = 'userTypeID';
+    protected $primaryKey = 'usertype_id';
 }
