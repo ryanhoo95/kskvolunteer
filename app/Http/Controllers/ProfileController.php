@@ -72,9 +72,6 @@ class ProfileController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!Hash::check($request->input('full_name'), '123')) {
-            return back()->with('error', 'pss');
-        }
         //validation
         $rules = [
             'profile_image' => 'image|nullable|max:1999',
