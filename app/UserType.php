@@ -12,7 +12,7 @@ class UserType extends Model
     //primary key
     protected $primaryKey = 'usertype_id';
 
-    //get the user for the usertype
+    //get the users for the usertype
     public function users() {
         return $this->hasMany('App\User', 'usertype', 'usertype_id');
     }
