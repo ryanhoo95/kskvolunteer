@@ -25,3 +25,5 @@ Auth::routes();
 Route::resource('profile', 'ProfileController');
 
 Route::get('/reset_password', 'ProfileController@resetPassword');
+
+Route::put('/reset_password/{id}', ['as' => 'profile.update_password', 'uses' => 'ProfileController@updatePassword']);

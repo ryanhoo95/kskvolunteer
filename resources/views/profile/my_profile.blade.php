@@ -6,19 +6,27 @@
     @extends('layouts.app')
 
     @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>
-            My Profile
-        </h1>
-        {{--  <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-        </ol>  --}}
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                My Profile
+            </h1>
+            {{--  <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>  --}}
         </section>
 
         <!-- Main content -->
         <section class="content container-fluid">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-check"></i> Success!</h4>
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <img src="/storage/profile_image/{{ Auth::user()->profile_image }}" class="profile-user-img img-responsive" alt="User Image" />
 
             <br/>
@@ -81,16 +89,12 @@
                         <div class="box-footer">
                             <a href="/reset_password" class="btn btn-default"><i class="fa fa-expeditedssl"></i><span> Reset Password</span></a>
                             <a href="/profile/{{ Auth::user()->user_id }}/edit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i><span> Edit</span></a>
-                        </div>
-                            
-                            
-                        </div>
+                        </div>      
                     </div>
                 </div>
-            </div>
-            
+            </div>    
         </section>
-    <!-- /.content -->
+        <!-- /.content -->
     @endsection
     
 @endif
