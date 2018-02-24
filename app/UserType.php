@@ -14,6 +14,6 @@ class UserType extends Model
 
     //get the user for the usertype
     public function users() {
-        return $this->hasMany('App\User', 'usertype');
+        return $this->hasMany('App\User', 'usertype', 'usertype_id');
     }
 }
