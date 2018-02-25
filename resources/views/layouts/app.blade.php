@@ -93,7 +93,9 @@
 
         <script type="text/javascript">
             $(function () {
-                $('#usertable').DataTable()
+                $('#usertable').DataTable({
+                    "order": []
+                })
 
                 $('#datepicker').datepicker({
                     autoclose: true,

@@ -19,6 +19,16 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-check"></i> Success!</h4>
+                    {{ session('success') }}
+                </div>
+            @endif
+            
+            <br>
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="box">
@@ -68,29 +78,31 @@
 
                                     <tbody>
                                         @foreach ($data['users'] as $user)
-                                            <td><a href="#">{{ $user->profile_name }}</a></td>
-                                            <td><a href="#">{{ $user->full_name }}</a></td>
-                                            <td>{{ $user->email }}</td>
-                                            <td>{{ $user->phone_no }}</td>
-
-                                            @if ($data['type'] == "staff")
-                                                @switch($user->usertype)
-                                                    @case(1)
-                                                        <td>Master Admin</td>
-                                                        @break
-                                                    @case(2)
-                                                        <td>Admin</td>
-                                                        @break
-                                                    @default
-                                                        <td>Staff</td>
-                                                @endswitch
-                                            @endif
-
-                                            @if ($user->status == 'A')
-                                                <td class="text-success"><b>Active</b></td>
-                                            @else
-                                                <td class="text-success"><b>Inactive</b></td>
-                                            @endif
+                                            <tr>
+                                                <td><a href="#">{{ $user->profile_name }}</a></td>
+                                                <td><a href="#">{{ $user->full_name }}</a></td>
+                                                <td>{{ $user->email }}</td>
+                                                <td>{{ $user->phone_no }}</td>
+    
+                                                @if ($data['type'] == "staff")
+                                                    @switch($user->usertype)
+                                                        @case(1)
+                                                            <td>Master Admin</td>
+                                                            @break
+                                                        @case(2)
+                                                            <td>Admin</td>
+                                                            @break
+                                                        @default
+                                                            <td>Staff</td>
+                                                    @endswitch
+                                                @endif
+    
+                                                @if ($user->status == 'A')
+                                                    <td class="text-success"><b>Active</b></td>
+                                                @else
+                                                    <td class="text-success"><b>Inactive</b></td>
+                                                @endif
+                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
