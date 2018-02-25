@@ -16,18 +16,20 @@
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/font-awesome/css/font-awesome.min.css")}}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/Ionicons/css/ionicons.min.css")}}">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{{asset("css/admin-lte/dist/css/AdminLTE.min.css")}}">
-    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
-            page. However, you can choose any other skin. Make sure you
-            apply the skin class to the body tag so the changes take effect. -->
-    <link rel="stylesheet" href="{{asset("css/admin-lte/dist/css/skins/skin-red.min.css")}}">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css")}}">
     <!-- Select2 -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/select2/dist/css/select2.min.css")}}">
     <!-- daterange picker -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/bootstrap-daterangepicker/daterangepicker.css")}}">
     <!-- bootstrap datepicker -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css")}}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{asset("css/admin-lte/dist/css/AdminLTE.min.css")}}">
+    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+            page. However, you can choose any other skin. Make sure you
+            apply the skin class to the body tag so the changes take effect. -->
+    <link rel="stylesheet" href="{{asset("css/admin-lte/dist/css/skins/skin-red.min.css")}}">
     <!-- iCheck for checkboxes and radio inputs -->
      <link rel="stylesheet" href="{{asset("css/admin-lte/plugins/iCheck/all.css")}}">
 
@@ -70,6 +72,13 @@
         <script src="{{asset("css/admin-lte/bower_components/jquery/dist/jquery.min.js")}}"></script>
         <!-- Bootstrap 3.3.7 -->
         <script src="{{asset("css/admin-lte/bower_components/bootstrap/dist/js/bootstrap.min.js")}}"></script>
+        <!-- DataTables -->
+        <script src="{{asset("css/admin-lte/bower_components/datatables.net/js/jquery.dataTables.min.js")}}"></script>
+        <script src="{{asset("css/admin-lte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js")}}"></script>
+        <!-- SlimScroll -->
+        <script src="{{asset("css/admin-lte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js")}}"></script>
+        <!-- FastClick -->
+        <script src="{{asset("css/admin-lte/bower_components/fastclick/lib/fastclick.js")}}"></script>   
         <!-- AdminLTE App -->
         <script src="{{asset("css/admin-lte/dist/js/adminlte.min.js")}}"></script>
         <!-- Select2 -->
@@ -84,6 +93,8 @@
 
         <script type="text/javascript">
             $(function () {
+                $('#usertable').DataTable()
+
                 $('#datepicker').datepicker({
                     autoclose: true,
                     format: 'dd M yyyy'

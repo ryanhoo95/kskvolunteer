@@ -27,3 +27,12 @@ Route::resource('profile', 'ProfileController');
 Route::get('/reset_password', 'ProfileController@resetPassword');
 
 Route::put('/reset_password/{id}', ['as' => 'profile.update_password', 'uses' => 'ProfileController@updatePassword']);
+
+Route::get('/test/{type}/{id}', ['as' => 'user.test', 'uses' => 'PagesController@test']);
+
+//user management
+Route::get('/user/{type}', ['as' => 'user.index', 'uses' => 'UserController@index']);
+Route::get('/user/{type}/{id}/profile', ['as' => 'user.show', 'uses' => 'UserController@show']);
+Route::get('/user/{type}/create', ['as' => 'user.create', 'uses' => 'UserController@create']);
+Route::post('/user/{type}', ['as' => 'user.store', 'uses' => 'UserController@store']);
+
