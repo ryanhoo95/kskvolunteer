@@ -43,7 +43,13 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($type, $id) {
+        //go to my profile if this the user click on his own name
+        if(Auth::user()->user_id == $id) {
+            return redirect('/profile');
+        }
+        else {
 
+        }
     }
 
     /**
@@ -70,7 +76,7 @@ class UserController extends Controller
         $rules = [
             'full_name' => 'required',
             'email' => 'required|email|unique:user',
-            'ic_passport' => 'required|alpha_num|confirmed',
+            'ic_passport' => 'required|alpha_num|unique:user|confirmed',
             'ic_passport_confirmation' => 'required',
             'gender' => 'required',
             'date_of_birth' => 'required',
@@ -81,6 +87,7 @@ class UserController extends Controller
             'required' => 'Please fill out this field.',
             'email' => 'Invalid email format.',
             'email.unique' => 'This email has already been taken.',
+            'ic_passport.unique' => 'This IC / passport no. has already been taken.',
             'ic_passport.alpha_num' => 'IC / passport no. contains invalid character.', 
             'confirmed' => 'IC / passport no. is mismatched',
             'phone_no.numeric' => 'The contact no. can only contain numbers.',
