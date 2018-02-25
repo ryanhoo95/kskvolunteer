@@ -74,6 +74,11 @@
                                 </tr>
 
                                 <tr>
+                                    <td><b>Position</b></td>
+                                    <td>{{ $usertype->usertype_name }}</td>
+                                </tr>
+
+                                <tr>
                                     <td><b>Contact No.</b></td>
                                     <td>{{ Auth::user()->phone_no }}</td>
                                 </tr>

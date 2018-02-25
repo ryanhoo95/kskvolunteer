@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\User;
+use App\UserType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Auth;
@@ -18,7 +19,10 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        return view('profile.my_profile');
+        $id = Auth::user()->usertype;
+        $usertype = UserType::find($id);
+
+        return view('profile.my_profile')->with('usertype', $usertype);
     }
 
     /**
