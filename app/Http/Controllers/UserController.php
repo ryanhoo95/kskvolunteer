@@ -149,6 +149,48 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $type, $id, $action) {
+        if($action == "reset_password") {
+            $user = User::find($id);
+            $user->password = bcrypt($user->ic_passport);
+            $user->save();
+            
+            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'Password has been reset to IC / passport no.');
+        }
+        else if($action == "activate") {
+            $user = User::find($id);
+            $user->status = "A";
+            $user->save();
+
+            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been activated.');
+        }
+        else if($action == "deactivate") {
+            $user = User::find($id);
+            $user->status = "I";
+            $user->save();
+
+            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been deactivated.');
+        }
+        else if($action == "promote_to_staff") {
+            $user = User::find($id);
+            $user->usertype = "3";
+            $user->save();
+
+            return redirect('/user/staff/'.$id.'/profile')->with('success', 'User has been promoted as Staff.');
+        }
+        else if($action == "promote_to_admin") {
+            $user = User::find($id);
+            $user->usertype = "2";
+            $user->save();
+
+            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been promoted as Admin.');
+        }
+        else if($action == "demote_to_staff") {
+            $user = User::find($id);
+            $user->usertype = "3";
+            $user->save();
+
+            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been demoted as Staff.');
+        }
 
     }
 }

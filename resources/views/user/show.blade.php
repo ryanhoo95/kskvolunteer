@@ -146,7 +146,7 @@
                                                 {{ Form::button('<i class="fa fa-arrow-circle-up"></i><span> Promote to Staff</span>', ['type' => 'submit', 'class' => 'btn btn-primary'] )  }}
 
                                             {!! Form::close() !!}
-                                        @elseif($data['usertype']->usertype_name == "Staff")
+                                        @elseif($data['usertype']->usertype_name == "Staff" && Auth::user()->usertype == 1)
                                             {!! Form::open(['action' => ['UserController@update', $data['type'], $data['user']->user_id, 'promote_to_admin'], 'onsubmit' => 'return confirmMsg("promote_to_admin");', 'method' => 'POST']) !!}
 
                                                 {{Form::hidden('_method', 'PUT')}}
@@ -157,7 +157,7 @@
                                             {!! Form::open(['action' => ['UserController@update', $data['type'], $data['user']->user_id, 'demote_to_staff'], 'onsubmit' => 'return confirmMsg("demote_to_staff");', 'method' => 'POST']) !!}
 
                                                 {{Form::hidden('_method', 'PUT')}}
-                                                {{ Form::button('<i class="fa fa-arrow-circle-down"></i><span> Demote to Admin</span>', ['type' => 'submit', 'class' => 'btn btn-primary'] )  }}
+                                                {{ Form::button('<i class="fa fa-arrow-circle-down"></i><span> Demote to Staff</span>', ['type' => 'submit', 'class' => 'btn btn-primary'] )  }}
 
                                             {!! Form::close() !!}
                                         @endif
