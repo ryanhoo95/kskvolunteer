@@ -48,6 +48,11 @@
                                 </tr>
 
                                 <tr>
+                                    <td><b>Email</b></td>
+                                    <td>{{ Auth::user()->email }}</td>
+                                </tr>
+
+                                <tr>
                                     <td><b>IC / Passport No.</b></td>
                                     <td>{{ Auth::user()->ic_passport }}</td>
                                 </tr>

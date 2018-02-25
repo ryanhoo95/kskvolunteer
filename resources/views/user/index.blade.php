@@ -79,8 +79,8 @@
                                     <tbody>
                                         @foreach ($data['users'] as $user)
                                             <tr>
-                                                <td><a href="#">{{ $user->profile_name }}</a></td>
-                                                <td><a href="#">{{ $user->full_name }}</a></td>
+                                                <td><a href="/user/{{ $data['type'] }}/{{ $user->user_id }}/profile">{{ $user->profile_name }}</a></td>
+                                                <td><a href="/user/{{ $data['type'] }}/{{ $user->user_id }}/profile">{{ $user->full_name }}</a></td>
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ $user->phone_no }}</td>
     
@@ -100,7 +100,7 @@
                                                 @if ($user->status == 'A')
                                                     <td class="text-success"><b>Active</b></td>
                                                 @else
-                                                    <td class="text-success"><b>Inactive</b></td>
+                                                    <td class="text-danger"><b>Inactive</b></td>
                                                 @endif
                                             </tr>
                                         @endforeach

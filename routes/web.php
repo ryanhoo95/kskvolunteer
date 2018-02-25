@@ -33,6 +33,7 @@ Route::get('/test/{type}/{id}', ['as' => 'user.test', 'uses' => 'PagesController
 //user management
 Route::get('/user/{type}', ['as' => 'user.index', 'uses' => 'UserController@index']);
 Route::get('/user/{type}/{id}/profile', ['as' => 'user.show', 'uses' => 'UserController@show']);
+Route::put('/user/{type}/{id}/profile/{action}', ['as' => 'user.update', 'uses' => 'UserController@update']);
 Route::get('/user/{type}/create', ['as' => 'user.create', 'uses' => 'UserController@create']);
 Route::post('/user/{type}', ['as' => 'user.store', 'uses' => 'UserController@store']);
 

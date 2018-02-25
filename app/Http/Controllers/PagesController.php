@@ -15,7 +15,7 @@ class PagesController extends Controller
             $id = Auth::user()->usertype;
             $usertype = UserType::find($id);
 
-            if($usertype->usertype_name == "Volunteer") {
+            if($usertype->usertype_name == "Volunteer" || Auth::user()->status == "I") {
                 return redirect('logout');
             }
             else {

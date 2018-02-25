@@ -96,21 +96,20 @@
 
                                     <!-- dob -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('date_of_birth') ? ' has-error' : '' }}">
-                                    {{Form::label('date_of_birth', 'Date of Birth')}}
-                                    <div class="input-group date">
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-calendar"></i>
+                                        {{Form::label('date_of_birth', 'Date of Birth')}}
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            {{Form::text('date_of_birth', Carbon::parse(Carbon::now())->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker'])}}
                                         </div>
-                                        {{Form::text('date_of_birth', Carbon::parse(Carbon::now())->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker'])}}
+
+                                        @if ($errors->has('date_of_birth'))
+                                            <span class="help-block">
+                                                *{{ $errors->first('date_of_birth') }}
+                                            </span>
+                                        @endif
                                     </div>
-
-                                    @if ($errors->has('date_of_birth'))
-                                        <span class="help-block">
-                                            *{{ $errors->first('date_of_birth') }}
-                                        </span>
-                                    @endif
-                                </div>
-
                                 </div>
 
                                 <div class="form-row">

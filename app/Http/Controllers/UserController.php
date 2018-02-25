@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\UserType;
+use App\VolunteerProfile;
 use Carbon\Carbon;
 use Auth;
 
@@ -44,11 +45,28 @@ class UserController extends Controller
      */
     public function show($type, $id) {
         //go to my profile if this the user click on his own name
-        if(Auth::user()->user_id == $id) {
-            return redirect('/profile');
+
+        if(Auth::user()) {
+            if(Auth::user()->user_id == $id) {
+                return redirect('/profile');
+            }
+            else {
+                $user = User::find($id);
+                $volunteer_profile = VolunteerProfile::where('user_id', $id)->get()->first();
+                $usertype = UserType::find($user->usertype);
+    
+                $data = [
+                    'user' => $user,
+                    'volunteer_profile' => $volunteer_profile,
+                    'usertype' => $usertype,
+                    'type' => $type
+                ];
+    
+                return view('user.show')->with('data', $data);
+            }
         }
         else {
-
+            return redirect('/');
         }
     }
 
@@ -70,8 +88,7 @@ class UserController extends Controller
      * @param string $type
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $type)
-    {
+    public function store(Request $request, $type) {
         //validation
         $rules = [
             'full_name' => 'required',
@@ -120,5 +137,18 @@ class UserController extends Controller
 
         return redirect('/user/'.$type)->with('success', 'User Created');
         
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param string $type
+     * @param  int  $id
+     * @param string $action
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $type, $id, $action) {
+
     }
 }
