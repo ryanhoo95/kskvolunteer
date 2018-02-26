@@ -137,7 +137,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect('/user/'.$type)->with('success', 'User Created');
+        return redirect('/user/'.$type)->with('success', 'User is created.');
         
     }
 

@@ -62,7 +62,7 @@
                             @if (count($data['users']) == 0)
                                 <p class="text-danger">No user at the moment.</p>
                             @else
-                                <table id="usertable" class="table table-bordered table-hover">
+                                <table id="datatable" class="table table-bordered table-hover">
                                     <thead>
                                         <th>Profile Name</th>
                                         <th>Full Name</th>

@@ -93,7 +93,7 @@
 
         <script type="text/javascript">
             $(function () {
-                $('#usertable').DataTable({
+                $('#datatable').DataTable({
                     "order": []
                 })
 
