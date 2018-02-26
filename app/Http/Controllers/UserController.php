@@ -92,7 +92,8 @@ class UserController extends Controller
         //validation
         $rules = [
             'full_name' => 'required',
-            'email' => 'required|email|unique:user',
+            'email' => 'required|email|unique:user|confirmed',
+            'email_confirmation' => 'required|email',
             'ic_passport' => 'required|alpha_num|unique:user|confirmed',
             'ic_passport_confirmation' => 'required',
             'gender' => 'required',
@@ -103,10 +104,11 @@ class UserController extends Controller
         $messages = [
             'required' => 'Please fill out this field.',
             'email' => 'Invalid email format.',
+            'email.confirmed' => 'Email mismatched.',
             'email.unique' => 'This email has already been taken.',
             'ic_passport.unique' => 'This IC / passport no. has already been taken.',
             'ic_passport.alpha_num' => 'IC / passport no. contains invalid character.', 
-            'confirmed' => 'IC / passport no. is mismatched',
+            'ic_passwport.confirmed' => 'IC / passport no. is mismatched.',
             'phone_no.numeric' => 'The contact no. can only contain numbers.',
         ];
 

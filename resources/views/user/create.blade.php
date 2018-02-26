@@ -53,6 +53,18 @@
                                     @endif
                                 </div>
 
+                                <!-- email confirmation -->
+                                <div class="form-group col-md-12 has-feedback {{ $errors->has('email_confirmation') ? ' has-error' : '' }}">
+                                    {{Form::label('email_confirmation', 'Confirm Email')}}
+                                    {{Form::text('email_confirmation', old('email_confirmation'), ['class' => 'form-control', 'placeholder' => 'Confirm email', 'maxLength' => 100])}}
+
+                                    @if ($errors->has('email_confirmation'))
+                                        <span class="help-block">
+                                            *{{ $errors->first('email_confirmation') }}
+                                        </span>
+                                    @endif
+                                </div>
+
                                 <div class="form-row">
                                     <!-- ic passport -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('ic_passport') ? ' has-error' : '' }}">
