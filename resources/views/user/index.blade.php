@@ -122,10 +122,10 @@
         <script type="text/javascript">
             function changeUserType() {
                 if (document.getElementById("select_usertype").value == "staff"){
-                    window.location = "{{ route('user.index', 'staff') }}";;
+                    window.location = "{{ route('user.index', 'staff') }}";
                 }     
                 else{
-                    window.location = "{{ route('user.index', 'volunteer') }}";;
+                    window.location = "{{ route('user.index', 'volunteer') }}";
                 }    
             }
         </script>
