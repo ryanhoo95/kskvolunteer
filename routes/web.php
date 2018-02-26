@@ -33,7 +33,23 @@ Route::get('/test/{type}/{id}', ['as' => 'user.test', 'uses' => 'PagesController
 //user management
 Route::get('/user/{type}', ['as' => 'user.index', 'uses' => 'UserController@index']);
 Route::get('/user/{type}/{id}/profile', ['as' => 'user.show', 'uses' => 'UserController@show']);
-Route::put('/user/{type}/{id}/profile/{action}', ['as' => 'user.update', 'uses' => 'UserController@update']);
 Route::get('/user/{type}/create', ['as' => 'user.create', 'uses' => 'UserController@create']);
 Route::post('/user/{type}', ['as' => 'user.store', 'uses' => 'UserController@store']);
+Route::put('/user/{type}/{id}/profile/{action}', ['as' => 'user.update', 'uses' => 'UserController@update']);
+
+//activity management (activity type)
+Route::get('/activity_type', ['as' => 'activity_type.index', 'uses' => 'ActivityTypeController@index']);
+Route::get('/activity_type/create', ['as' => 'activity_type.create', 'uses' => 'ActivityTypeController@create']);
+Route::get('/activity_type/{id}', ['as' => 'activity_type.show', 'uses' => 'ActivityTypeController@show']);
+Route::post('/activity_type', ['as' => 'activity_type.store', 'uses' => 'ActivityTypeController@store']);
+Route::get('/activity_type/{id}/edit', ['as' => 'activity_type.edit', 'uses' => 'ActivityTypeController@edit']);
+Route::put('/activity_type/{id}/{action}', ['as' => 'activity_type.update', 'uses' => 'ActivityTypeController@update']);
+
+//activity management (activity)
+Route::get('/activity', ['as' => 'activity.index', 'uses' => 'ActivityController@index']);
+Route::get('/activity/{id}', ['as' => 'activity.show', 'uses' => 'ActivityController@show']);
+Route::get('/activity/create', ['as' => 'activity.create', 'uses' => 'ActivityController@create']);
+Route::post('/activity', ['as' => 'activity.store', 'uses' => 'ActivityController@store']);
+Route::get('/activity/{id}/edit', ['as' => 'activity.edit', 'uses' => 'ActivityController@edit']);
+Route::put('/activity/{id}', ['as' => 'activity.update', 'uses' => 'ActivityController@update']);
 
