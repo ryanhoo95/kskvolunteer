@@ -67,35 +67,37 @@
                                     @endif
                                 </div>
 
-                                <!-- gender -->
-                                <div class="form-group has-feedback {{ $errors->has('gender') ? ' has-error' : '' }}">
-                                    {{Form::label('gender', 'Gender')}}
-                                    {{Form::select('gender', ['M' => 'Male', 'F' => 'Female'], Auth::user()->gender, ['class' => 'form-control'])}}
-
-                                    @if ($errors->has('gender'))
-                                        <span class="help-block">
-                                            *{{ $errors->first('gender') }}
-                                        </span>
-                                    @endif
-                                </div>
-
-                                <!-- date of birth -->
-                                <div class="form-group has-feedback {{ $errors->has('date_of_birth') ? ' has-error' : '' }}">
-                                    {{Form::label('date_of_birth', 'Date of Birth')}}
-                                    <div class="input-group date">
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-calendar"></i>
-                                        </div>
-                                        {{Form::text('date_of_birth', Carbon::parse(Auth::user()->date_of_birth)->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker'])}}
+                                <div class="row">
+                                    <!-- gender -->
+                                    <div class="form-group col-md-6 has-feedback {{ $errors->has('gender') ? ' has-error' : '' }}">
+                                        {{Form::label('gender', 'Gender')}}
+                                        {{Form::select('gender', ['M' => 'Male', 'F' => 'Female'], Auth::user()->gender, ['class' => 'form-control'])}}
+    
+                                        @if ($errors->has('gender'))
+                                            <span class="help-block">
+                                                *{{ $errors->first('gender') }}
+                                            </span>
+                                        @endif
                                     </div>
 
-                                    @if ($errors->has('date_of_birth'))
-                                        <span class="help-block">
-                                            *{{ $errors->first('date_of_birth') }}
-                                        </span>
-                                    @endif
+                                    <!-- date of birth -->
+                                    <div class="form-group col-md-6 has-feedback {{ $errors->has('date_of_birth') ? ' has-error' : '' }}">
+                                        {{Form::label('date_of_birth', 'Date of Birth')}}
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            {{Form::text('date_of_birth', Carbon::parse(Auth::user()->date_of_birth)->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker', 'placeholder' => 'Enter date of birth'])}}
+                                        </div>
+    
+                                        @if ($errors->has('date_of_birth'))
+                                            <span class="help-block">
+                                                *{{ $errors->first('date_of_birth') }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
-
+                                
                                 <!-- phone no -->
                                 <div class="form-group has-feedback {{ $errors->has('phone_no') ? ' has-error' : '' }}">
                                     {{Form::label('phone_no', 'Contact No.')}}

@@ -30,7 +30,7 @@
                             <div class="box-body">
 
                                 <!-- full name -->
-                                <div class="form-group col-md-12 has-feedback {{ $errors->has('full_name') ? ' has-error' : '' }}">
+                                <div class="form-group has-feedback {{ $errors->has('full_name') ? ' has-error' : '' }}">
                                     {{Form::label('full_name', 'Full Name')}}
                                     {{Form::text('full_name', old('full_name'), ['class' => 'form-control', 'placeholder' => 'Enter full name', 'maxLength' => 100])}}
 
@@ -42,7 +42,7 @@
                                 </div>
 
                                 <!-- email -->
-                                <div class="form-group col-md-12 has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
+                                <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
                                     {{Form::label('email', 'Email')}}
                                     {{Form::text('email', old('email'), ['class' => 'form-control', 'placeholder' => 'Enter email', 'maxLength' => 100])}}
 
@@ -54,7 +54,7 @@
                                 </div>
 
                                 <!-- email confirmation -->
-                                <div class="form-group col-md-12 has-feedback {{ $errors->has('email_confirmation') ? ' has-error' : '' }}">
+                                <div class="form-group has-feedback {{ $errors->has('email_confirmation') ? ' has-error' : '' }}">
                                     {{Form::label('email_confirmation', 'Confirm Email')}}
                                     {{Form::text('email_confirmation', old('email_confirmation'), ['class' => 'form-control', 'placeholder' => 'Confirm email', 'maxLength' => 100])}}
 
@@ -65,7 +65,7 @@
                                     @endif
                                 </div>
 
-                                <div class="form-row">
+                                <div class="row">
                                     <!-- ic passport -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('ic_passport') ? ' has-error' : '' }}">
                                         {{Form::label('ic_passport', 'IC / Passport No.')}}
@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-row">
+                                <div class="row">
                                     <!-- gender -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('gender') ? ' has-error' : '' }}">
                                         {{Form::label('gender', 'Gender')}}
@@ -113,7 +113,7 @@
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </div>
-                                            {{Form::text('date_of_birth', Carbon::parse(Carbon::now())->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker'])}}
+                                            {{Form::text('date_of_birth', Carbon::parse(Carbon::now())->format('d M Y'), ['class' => 'form-control pull-right', 'id' => 'datepicker', 'placeholder' => 'Enter date of birth'])}}
                                         </div>
 
                                         @if ($errors->has('date_of_birth'))
@@ -124,7 +124,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-row">
+                                <div class="row">
                                     <!-- contact no-->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('phone_no') ? ' has-error' : '' }}">
                                         {{Form::label('phone_no', 'Contact No.')}}
