@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/bootstrap-daterangepicker/daterangepicker.css")}}">
     <!-- bootstrap datepicker -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css")}}">
+    <!-- Bootstrap time Picker -->
+    <link rel="stylesheet" href="{{asset("css/admin-lte/plugins/timepicker/bootstrap-timepicker.min.css")}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/dist/css/AdminLTE.min.css")}}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -83,6 +85,8 @@
         <script src="{{asset("css/admin-lte/dist/js/adminlte.min.js")}}"></script>
         <!-- Select2 -->
         <script src="{{asset("css/admin-lte/bower_components/select2/dist/js/select2.full.min.js")}}"></script>
+        <!-- bootstrap time picker -->
+        <script src="{{asset("css/admin-lte/plugins/timepicker/bootstrap-timepicker.min.js")}}"></script>
         <!-- date-range-picker -->
         <script src="{{asset("css/admin-lte/bower_components/moment/min/moment.min.js")}}"></script>
         <script src="{{asset("css/admin-lte/bower_components/bootstrap-daterangepicker/daterangepicker.js")}}"></script>
@@ -93,13 +97,20 @@
 
         <script type="text/javascript">
             $(function () {
+                //data table
                 $('#datatable').DataTable({
                     "order": []
                 })
 
+                //date picker
                 $('#datepicker').datepicker({
                     autoclose: true,
                     format: 'dd M yyyy'
+                })
+
+                //Timepicker
+                $('.timepicker').timepicker({
+                    showInputs: false
                 })
             })
         </script>
