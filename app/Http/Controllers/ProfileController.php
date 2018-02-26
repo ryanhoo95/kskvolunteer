@@ -89,7 +89,7 @@ class ProfileController extends Controller
             'profile_name' => 'required',
             'full_name' => 'required',
             'gender' => 'required',
-            'date_of_birth' => 'required',
+            'date_of_birth' => 'required|date',
             'phone_no' => 'required|numeric',
             'address' => 'required',
         ];
@@ -98,6 +98,7 @@ class ProfileController extends Controller
             'required' => 'Please fill out this field.',
             'profile_image.max' => 'Please make sure the size of the image is less than 2MB.',
             'phone_no.numeric' => 'The contact no. can only contain numbers.',
+            'date' => 'Invalid date format.'
         ];
 
         $request->validate($rules, $messages);

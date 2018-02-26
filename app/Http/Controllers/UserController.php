@@ -97,7 +97,7 @@ class UserController extends Controller
             'ic_passport' => 'required|alpha_num|unique:user|confirmed',
             'ic_passport_confirmation' => 'required',
             'gender' => 'required',
-            'date_of_birth' => 'required',
+            'date_of_birth' => 'required|date',
             'phone_no' => 'required|numeric',
         ];
 
@@ -110,6 +110,7 @@ class UserController extends Controller
             'ic_passport.alpha_num' => 'IC / passport no. contains invalid character.', 
             'ic_passwport.confirmed' => 'IC / passport no. is mismatched.',
             'phone_no.numeric' => 'The contact no. can only contain numbers.',
+            'date' => 'Invalid date format.'
         ];
 
         $request->validate($rules, $messages);
