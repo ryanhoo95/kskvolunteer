@@ -27,7 +27,7 @@ class ActivityTypeController extends Controller
     }
 
     /**
-     * Display the selected user.
+     * Display the selected activity type.
      *
      * @param int $id
      * @return \Illuminate\Http\Response
@@ -53,7 +53,7 @@ class ActivityTypeController extends Controller
     }
 
     /**
-     * Store a newly created user in storage.
+     * Store a newly created activity type in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param string $type
