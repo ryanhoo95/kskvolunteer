@@ -11,10 +11,10 @@
             <h1>
                 Activities
             </h1>
-            {{--  <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>  --}}
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Activities</li>
+            </ol>
         </section>
 
         <!-- Main content -->
