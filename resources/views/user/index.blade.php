@@ -11,10 +11,14 @@
             <h1>
                 Users
             </h1>
-            {{--  <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>  --}}
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+                @if ($data['type'] == "staff")
+                    <li class="active">Staffs</li>
+                @else
+                    <li class="active">Volunteers</li>
+                @endif
+            </ol>
         </section>
 
         <!-- Main content -->

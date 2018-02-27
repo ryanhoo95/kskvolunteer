@@ -3,18 +3,25 @@
         window.location = "{{ route('login') }}";
     </script>
 @else
-    @extends('layouts.app')
+    <!-- does not allow staff to come here -->
+    @if (Auth::user()->usertype == 3)
+        <script type="text/javascript">
+            window.location = "{{ route('user.index', 'staff') }}";
+        </script>
+    @else
+        @extends('layouts.app')
 
-    @section('content')
+        @section('content')
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
                 Add Staff
             </h1>
-            {{--  <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>  --}}
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="/user/staff">Staffs</a></li>
+                <li class="active">Add Staff</li>
+            </ol>
         </section>
 
         <!-- Main content -->
@@ -165,4 +172,5 @@
             </div>
         </section>
     @endsection
+    @endif
 @endif
