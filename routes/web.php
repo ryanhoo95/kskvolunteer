@@ -47,8 +47,8 @@ Route::put('/activity_type/{id}/{action}', ['as' => 'activity_type.update', 'use
 
 //activity management (activity)
 Route::get('/activity', ['as' => 'activity.index', 'uses' => 'ActivityController@index']);
-Route::get('/activity/{id}', ['as' => 'activity.show', 'uses' => 'ActivityController@show']);
 Route::get('/activity/create', ['as' => 'activity.create', 'uses' => 'ActivityController@create']);
+Route::get('/activity/{id}', ['as' => 'activity.show', 'uses' => 'ActivityController@show']);
 Route::post('/activity', ['as' => 'activity.store', 'uses' => 'ActivityController@store']);
 Route::get('/activity/{id}/edit', ['as' => 'activity.edit', 'uses' => 'ActivityController@edit']);
 Route::put('/activity/{id}', ['as' => 'activity.update', 'uses' => 'ActivityController@update']);

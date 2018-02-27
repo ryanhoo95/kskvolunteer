@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon;
+use Auth;
 use App\Activity;
 use App\ActivityType;
 
@@ -25,162 +27,149 @@ class ActivityController extends Controller
     }
 
     /**
-     * Display the selected user.
+     * Display the selected activity.
      *
-     * @param string $type
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($type, $id) {
-        //go to my profile if this the user click on his own name
+    public function show($id) {
+        $activity_type = ActivityType::find($id);
 
-        if(Auth::user()) {
-            if(Auth::user()->user_id == $id) {
-                return redirect('/profile');
-            }
-            else {
-                $user = User::find($id);
-                $volunteer_profile = VolunteerProfile::where('user_id', $id)->get()->first();
-                $usertype = UserType::find($user->usertype);
-    
-                $data = [
-                    'user' => $user,
-                    'volunteer_profile' => $volunteer_profile,
-                    'usertype' => $usertype,
-                    'type' => $type
-                ];
-    
-                return view('user.show')->with('data', $data);
-            }
-        }
-        else {
-            return redirect('/');
-        }
+        $data = [
+            'activity_type' => $activity_type,
+        ];
+
+        return view('activity_type.show')->with('data', $data);
     }
 
     /**
-     * Show the form for creating a new user.
+     * Show the form for creating a new activity.
      *
-     * @param string $type
      * @return \Illuminate\Http\Response
      */
-    public function create($type)
+    public function create()
     {
-        return view('user.create')->with('type', $type);
+        //get the available activity type to be used as template
+        $activity_types = ActivityType::where('status', 'A')->orderBy('activity_title', 'asc')->get(['activity_title', 'start_time', 'end_time', 'description', 'remark']);
+
+        $data = [
+            'activity_types' => $activity_types
+        ];
+
+        return view('activity.create')->with('data', $data);
+        //return $data;
     }
 
     /**
-     * Store a newly created user in storage.
+     * Store a newly created activity type in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param string $type
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $type) {
+    public function store(Request $request) {
         //validation
         $rules = [
-            'full_name' => 'required',
-            'email' => 'required|email|unique:user|confirmed',
-            'email_confirmation' => 'required|email',
-            'ic_passport' => 'required|alpha_num|unique:user|confirmed',
-            'ic_passport_confirmation' => 'required',
-            'gender' => 'required',
-            'date_of_birth' => 'required',
-            'phone_no' => 'required|numeric',
+            'activity_title' => 'required',
+            'start_time' => 'required|date_format:h:i A',
+            'end_time' => 'required|date_format:h:i A',
+            'description' => 'nullable',
+            'remark' => 'nullable',
         ];
 
         $messages = [
             'required' => 'Please fill out this field.',
-            'email' => 'Invalid email format.',
-            'email.confirmed' => 'Email mismatched.',
-            'email.unique' => 'This email has already been taken.',
-            'ic_passport.unique' => 'This IC / passport no. has already been taken.',
-            'ic_passport.alpha_num' => 'IC / passport no. contains invalid character.', 
-            'ic_passwport.confirmed' => 'IC / passport no. is mismatched.',
-            'phone_no.numeric' => 'The contact no. can only contain numbers.',
+            'date_format' => 'Invalid time format.',
         ];
 
         $request->validate($rules, $messages);
 
-        //create user
-        $user = new User;
-        $user->full_name = $request->input('full_name');
-        $user->profile_name = $request->input('full_name');
-        $user->email = $request->input('email');
-        $user->ic_passport = $request->input('ic_passport');
-        $user->password = bcrypt($request->input('ic_passport'));
-        $user->gender = $request->input('gender');
-        $user->date_of_birth = Carbon::parse($request->input('date_of_birth'))->format('Y-m-d');
-        $user->phone_no = $request->input('phone_no');
-        $user->address = "Kechara Soup Kitchen";
-        $user->profile_image = "no_image.png";
-        $user->status = "A";
+        //create activity type
+        $activity_type = new ActivityType;
+        $activity_type->activity_title = $request->input('activity_title');
+        $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
+        $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+        $activity_type->description = $request->input('description');
+        $activity_type->remark = $request->input('remark');
+        $activity_type->status = "A";
+        $activity_type->created_by = Auth::user()->user_id;
+        $activity_type->updated_by = Auth::user()->user_id;
 
-        if(Auth::user()->usertype = 1) {
-            $user->usertype = $request->input('usertype');
-        }
-        else {
-            $user->usertype = "3";
-        }
+        $activity_type->save();
 
-        $user->save();
-
-        return redirect('/user/'.$type)->with('success', 'User Created');
+        return redirect('/activity_type')->with('success', 'Template is created.');
         
+    }
+
+    /**
+     * Show the form for editing the activity type.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $activity_type = ActivityType::find($id);
+
+        $data = [
+            'activity_type' => $activity_type,
+        ];
+
+        return view('activity_type.edit')->with('data', $data);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param string $type
      * @param  int  $id
      * @param string $action
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $type, $id, $action) {
-        if($action == "reset_password") {
-            $user = User::find($id);
-            $user->password = bcrypt($user->ic_passport);
-            $user->save();
+    public function update(Request $request, $id, $action) {
+        if($action == "update_info") {
+            //validation
+            $rules = [
+                'activity_title' => 'required',
+                'start_time' => 'required|date_format:h:i A',
+                'end_time' => 'required|date_format:h:i A',
+                'description' => 'nullable',
+                'remark' => 'nullable',
+            ];
+
+            $messages = [
+                'required' => 'Please fill out this field.',
+                'date_format' => 'Invalid time format.',
+            ];
+
+            $request->validate($rules, $messages);
+
+            $activity_type = ActivityType::find($id);
+            $activity_type->activity_title = $request->input('activity_title');
+            $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
+            $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+            $activity_type->description = $request->input('description');
+            $activity_type->remark = $request->input('remark');
+            $activity_type->updated_by = Auth::user()->user_id;
+            $activity_type->save();
             
-            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'Password has been reset to IC / passport no.');
+            return redirect('/activity_type/'.$id)->with('success', 'Template has been updated.');
         }
         else if($action == "activate") {
-            $user = User::find($id);
-            $user->status = "A";
-            $user->save();
+            $activity_type = ActivityType::find($id);
+            $activity_type->status = "A";
+            $activity_type->updated_by = Auth::user()->user_id;
+            $activity_type->save();
 
-            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been activated.');
+            return redirect('/activity_type/'.$id)->with('success', 'Template has been activated.');
         }
         else if($action == "deactivate") {
-            $user = User::find($id);
-            $user->status = "I";
-            $user->save();
+            $activity_type = ActivityType::find($id);
+            $activity_type->status = "I";
+            $activity_type->updated_by = Auth::user()->user_id;
+            $activity_type->save();
 
-            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been deactivated.');
+            return redirect('/activity_type/'.$id)->with('success', 'Template has been deactivated.');
         }
-        else if($action == "promote_to_staff") {
-            $user = User::find($id);
-            $user->usertype = "3";
-            $user->save();
-
-            return redirect('/user/staff/'.$id.'/profile')->with('success', 'User has been promoted as Staff.');
-        }
-        else if($action == "promote_to_admin") {
-            $user = User::find($id);
-            $user->usertype = "2";
-            $user->save();
-
-            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been promoted as Admin.');
-        }
-        else if($action == "demote_to_staff") {
-            $user = User::find($id);
-            $user->usertype = "3";
-            $user->save();
-
-            return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been demoted as Staff.');
-        }
-
     }
 }

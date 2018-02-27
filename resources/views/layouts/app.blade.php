@@ -112,6 +112,13 @@
                 $('.timepicker').timepicker({
                     showInputs: false
                 })
+
+                //Date range picker
+                $('#date_range').daterangepicker({
+                    locale: {
+                        format: 'DD MMM YYYY'
+                    }
+                })
             })
         </script>
     </div>
