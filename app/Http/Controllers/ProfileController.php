@@ -20,13 +20,13 @@ class ProfileController extends Controller
     public function index()
     {
         if(Auth::user()) {
-            $id = Auth::user()->usertype;
-            $usertype = UserType::find($id);
+            // $id = Auth::user()->usertype;
+            // $usertype = UserType::find($id);
 
-            return view('profile.my_profile')->with('usertype', $usertype);
+            return view('profile.my_profile');
         }
         else {
-            return view('profile.my_profile');
+            return redirect('/');
         }
         
     }

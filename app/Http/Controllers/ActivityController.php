@@ -7,6 +7,7 @@ use Carbon;
 use Auth;
 use App\Activity;
 use App\ActivityType;
+use Illuminate\Database\QueryException;
 
 class ActivityController extends Controller
 {
@@ -16,13 +17,20 @@ class ActivityController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $activities = Activity::orderBy('activity_date', 'desc')->get();
         
-        $data = [
-            'activities' => $activities,
-        ];
 
-        return view('activity.index')->with('data', $data);
+        try {
+            $activities = Activity::orderBy('activity_date', 'desc')->get();
+        
+            $data = [
+                'activities' => $activities,
+            ];
+
+            return view('activity.index')->with('data', $data);
+        }
+        catch (\Exception $e) {
+            return $e->getMessage();
+        }
         //return $data;
     }
 

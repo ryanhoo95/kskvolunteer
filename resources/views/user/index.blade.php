@@ -53,7 +53,8 @@
 
                                 <div class="col-xs-6 col-md-10">
                                     @if ($data['type'] == "staff")
-                                        @if (Auth::user()->usertype == 1 || Auth::user()->usertype == 2)
+                                        <!-- admin and master admin can add staff -->
+                                        @if (AppHelper::currentUserRole() == "Master Admin" || AppHelper::currentUserRole() == "Admin")
                                             <a href="/user/{{ $data['type'] }}/create" class="btn btn-primary pull-right"><i class="fa fa-plus"></i><span> Add Staff</span></a>
                                         @endif
                                     @endif
@@ -89,16 +90,7 @@
                                                 <td>{{ $user->phone_no }}</td>
     
                                                 @if ($data['type'] == "staff")
-                                                    @switch($user->usertype)
-                                                        @case(1)
-                                                            <td>Master Admin</td>
-                                                            @break
-                                                        @case(2)
-                                                            <td>Admin</td>
-                                                            @break
-                                                        @default
-                                                            <td>Staff</td>
-                                                    @endswitch
+                                                    <td>{{ AppHelper::getUserRole($user->usertype) }}</td>
                                                 @endif
     
                                                 @if ($user->status == 'A')

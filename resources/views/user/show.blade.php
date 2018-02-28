@@ -85,7 +85,7 @@
 
                                 <tr>
                                     <td><b>Position</b></td>
-                                    <td>{{ $data['usertype']->usertype_name }}</td>
+                                    <td>{{ AppHelper::getUserRole($data['user']->usertype) }}</td>
                                 </tr>
 
                                 <tr>
@@ -99,7 +99,7 @@
                                 </tr>
 
                                 <!-- display the volunteer profile if this user is a volunteer -->
-                                @if ($data['usertype']->usertype_name == "Volunteer" && $data['volunteer_profile'])
+                                @if (AppHelper::getUserRole($data['user']->usertype) == "Volunteer" && $data['volunteer_profile'])
                                     <tr>
                                         <td><b>Emergency Contact Person</b></td>
                                         <td>{{ $data['volunteer_profile']->emergency_name }} ({{ $data['volunteer_profile']->emergency_relation }}</td>
@@ -129,7 +129,7 @@
 
                         <!-- only accessible by master admin or admin -->
                         <!-- admin cannot perform any action on master admin profile and other admins-->
-                        @if (Auth::user()->usertype != 3 && $data['usertype']->usertype_name != "Master Admin" && Auth::user()->usertype != $data['usertype']->usertype_id)
+                        @if (AppHelper::currentUserRole() != "Staff" && AppHelper::getUserRole($data['user']->usertype) != "Master Admin" && Auth::user()->usertype != $data['user']->usertype)
                             <!-- footer -->
                             <div class="box-footer">
                                 <div class="row">
@@ -144,21 +144,26 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        @if ($data['usertype']->usertype_name == "Volunteer")
+                                        <!-- admin and master admin can promote volunteer to staff -->
+                                        @if (AppHelper::getUserRole($data['user']->usertype) == "Volunteer")
                                             {!! Form::open(['action' => ['UserController@update', $data['type'], $data['user']->user_id, 'promote_to_staff'], 'onsubmit' => 'return confirmMsg("promote_to_staff");', 'method' => 'POST']) !!}
 
                                                 {{Form::hidden('_method', 'PUT')}}
                                                 {{ Form::button('<i class="fa fa-arrow-circle-up"></i><span> Promote to Staff</span>', ['type' => 'submit', 'class' => 'btn btn-primary'] )  }}
 
                                             {!! Form::close() !!}
-                                        @elseif($data['usertype']->usertype_name == "Staff" && Auth::user()->usertype == 1)
+
+                                        <!-- master admin can promote staff to admin -->
+                                        @elseif(AppHelper::getUserRole($data['user']->usertype) == "Staff" && AppHelper::currentUserRole() == "Master Admin")
                                             {!! Form::open(['action' => ['UserController@update', $data['type'], $data['user']->user_id, 'promote_to_admin'], 'onsubmit' => 'return confirmMsg("promote_to_admin");', 'method' => 'POST']) !!}
 
                                                 {{Form::hidden('_method', 'PUT')}}
                                                 {{ Form::button('<i class="fa fa-arrow-circle-up"></i><span> Promote to Admin</span>', ['type' => 'submit', 'class' => 'btn btn-primary'] )  }}
 
                                             {!! Form::close() !!}
-                                        @elseif($data['usertype']->usertype_name == "Admin")
+
+                                        <!-- Master admin can demote admin to staff -->
+                                        @elseif(AppHelper::getUserRole($data['user']->usertype) == "Admin")
                                             {!! Form::open(['action' => ['UserController@update', $data['type'], $data['user']->user_id, 'demote_to_staff'], 'onsubmit' => 'return confirmMsg("demote_to_staff");', 'method' => 'POST']) !!}
 
                                                 {{Form::hidden('_method', 'PUT')}}

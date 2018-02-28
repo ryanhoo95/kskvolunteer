@@ -4,7 +4,7 @@
     </script>
 @else
     <!-- do not allow staff to come this page -->
-    @if (Auth::user()->usertype == 3)
+    @if (AppHelper::currentUserRole() == "Staff")
         <script type="text/javascript">
             window.location = "{{ route('activity.index') }}";
         </script>

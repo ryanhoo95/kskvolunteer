@@ -53,12 +53,11 @@ class UserController extends Controller
             else {
                 $user = User::find($id);
                 $volunteer_profile = VolunteerProfile::where('user_id', $id)->get()->first();
-                $usertype = UserType::find($user->usertype);
+                // $usertype = UserType::find($user->usertype);
     
                 $data = [
                     'user' => $user,
                     'volunteer_profile' => $volunteer_profile,
-                    'usertype' => $usertype,
                     'type' => $type
                 ];
     

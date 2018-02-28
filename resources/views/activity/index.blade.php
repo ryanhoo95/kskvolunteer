@@ -36,7 +36,7 @@
                         <div class="box-header">
                             <div class="row">
                                 <div class="col-xs-6 col-md-2">
-                                    @if (Auth::user()->usertype == 1 || Auth::user()->usertype == 2)
+                                    @if (AppHelper::currentUserRole() == "Master Admin" || AppHelper::currentUserRole() == "Admin")
                                         <select name="activity_view" id="select_activity_view" class="form-control pull-left" onchange="changeActivityView()">
                                             <option value="activity" selected>Activity</option>
                                             <option value="activity_type">Activity Template</option>

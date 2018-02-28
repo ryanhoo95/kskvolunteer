@@ -80,7 +80,7 @@
 
                                 <tr>
                                     <td><b>Position</b></td>
-                                    <td>{{ $usertype->usertype_name }}</td>
+                                    <td>{{ AppHelper::currentUserRole() }}</td>
                                 </tr>
 
                                 <tr>
