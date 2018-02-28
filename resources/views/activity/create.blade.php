@@ -25,7 +25,7 @@
                 <div class="col-md-6 col-md-offset-3">
                     <div class="box">
                         
-                        {!! Form::open(['action' => ['ActivityTypeController@store'], 'method' => 'POST']) !!}
+                        {!! Form::open(['action' => ['ActivityController@store'], 'method' => 'POST']) !!}
 
                             <!-- box body -->
                             <div class="box-body">
@@ -56,6 +56,7 @@
 
                                 <div class="row">
                                     <div class="col-md-6">
+                                        <div class="form-group has-feedback {{ $errors->has('slot') ? ' has-error' : '' }}">
                                             {{Form::label('slot', 'Slot')}}
                                             {{Form::text('slot', old('slot'), ['class' => 'form-control', 'placeholder' => 'Enter number of slot', 'maxLength' => 3, 'id' => 'slot'])}}
         
@@ -64,6 +65,7 @@
                                                     *{{ $errors->first('slot') }}
                                                 </span>
                                             @endif
+                                        </div>
                                     </div>
 
                                     <div class="col-md-6">

@@ -97,6 +97,7 @@
 
         <script type="text/javascript">
             $(function () {
+                var today = new Date();
                 //data table
                 $('#datatable').DataTable({
                     "order": []
@@ -115,6 +116,7 @@
 
                 //Date range picker
                 $('#date_range').daterangepicker({
+                    minDate: today,
                     locale: {
                         format: 'DD MMM YYYY'
                     }

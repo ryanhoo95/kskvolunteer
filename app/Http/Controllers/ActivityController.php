@@ -41,13 +41,13 @@ class ActivityController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        $activity_type = ActivityType::find($id);
+        $activity = Activity::find($id);
 
         $data = [
-            'activity_type' => $activity_type,
+            'activity' => $activity,
         ];
 
-        return view('activity_type.show')->with('data', $data);
+        return view('activity.show')->with('data', $data);
     }
 
     /**
@@ -69,44 +69,84 @@ class ActivityController extends Controller
     }
 
     /**
-     * Store a newly created activity type in storage.
+     * Store a newly created activity in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param string $type
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
         //validation
         $rules = [
             'activity_title' => 'required',
+            'slot' => 'required|numeric',
+            'date' => 'required',
             'start_time' => 'required|date_format:h:i A',
-            'end_time' => 'required|date_format:h:i A',
+            'end_time' => 'required|date_format:h:i A|after:start_time',
             'description' => 'nullable',
             'remark' => 'nullable',
         ];
 
         $messages = [
             'required' => 'Please fill out this field.',
-            'date_format' => 'Invalid time format.',
+            'slot.numeric' => 'The slot can only contain numbers.',
+            'start_time.date_format' => 'Invalid time format.',
+            'end_time.date_format' => 'Invalid time format.',
+            'end_time.after' => 'End time must be greater than start time.'
         ];
 
         $request->validate($rules, $messages);
 
-        //create activity type
-        $activity_type = new ActivityType;
-        $activity_type->activity_title = $request->input('activity_title');
-        $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
-        $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
-        $activity_type->description = $request->input('description');
-        $activity_type->remark = $request->input('remark');
-        $activity_type->status = "A";
-        $activity_type->created_by = Auth::user()->user_id;
-        $activity_type->updated_by = Auth::user()->user_id;
-
-        $activity_type->save();
-
-        return redirect('/activity_type')->with('success', 'Template is created.');
+        //get the date range
+        $start_date = Carbon::parse(substr($request->input('date'), 0, 11));
+        $end_date = Carbon::parse(substr($request->input('date'), 14, 11));
+        $dates = $this->dateRanges($start_date, $end_date);
+        $start_time = Carbon::parse($request->input('start_time'));
+        $end_time = Carbon::parse($request->input('end_time'));
+        $duration = $end_time->diffInHours($start_time);
         
+
+        // $data = [
+        //     'start' => $start_date->format('d M Y'),
+        //     'end' => $end_date->format('d M Y'),
+        //     'dates' => $dates,
+        //     'start time' => $start_time->format('h:i A'),
+        //     'end_time' => $end_time->format('h:i A'),
+        //     'duration' => $duration
+        // ];
+
+        foreach($dates as $date) {
+            //create activity
+            $activity = new Activity;
+            $activity->activity_title = $request->input('activity_title');
+            $activity->slot = $request->input('slot');
+            $activity->activity_date = $date;
+            $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
+            $activity->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+            $activity->duration = $duration;
+            $activity->description = $request->input('description');
+            $activity->remark = $request->input('remark');
+            $activity->status = "A";
+            $activity->created_by = Auth::user()->user_id;
+            $activity->updated_by = Auth::user()->user_id;
+
+            $activity->save();
+        }
+
+        return redirect('/activity')->with('success', 'Activity(s) is created.');
+
+        // return $data;
+        
+    }
+
+    private function dateRanges(Carbon $start, Carbon $end) {
+        $dates = [];
+
+        for($date = $start; $date->lte($end); $date->addDay()) {
+            //format to mysql date
+            $dates[] = $date->format('Y-m-d');
+        }
+
+        return $dates;
     }
 
     /**
