@@ -64,7 +64,7 @@ class ActivityTypeController extends Controller
         $rules = [
             'activity_title' => 'required',
             'start_time' => 'required|date_format:h:i A',
-            'end_time' => 'required|date_format:h:i A',
+            'end_time' => 'required|date_format:h:i A|after:start_time',
             'description' => 'nullable',
             'remark' => 'nullable',
         ];
@@ -72,6 +72,7 @@ class ActivityTypeController extends Controller
         $messages = [
             'required' => 'Please fill out this field.',
             'date_format' => 'Invalid time format.',
+            'end_time.after' => 'End time must be greater than start time.'
         ];
 
         $request->validate($rules, $messages);
@@ -124,7 +125,7 @@ class ActivityTypeController extends Controller
             $rules = [
                 'activity_title' => 'required',
                 'start_time' => 'required|date_format:h:i A',
-                'end_time' => 'required|date_format:h:i A',
+                'end_time' => 'required|date_format:h:i A|after:start_time',
                 'description' => 'nullable',
                 'remark' => 'nullable',
             ];
@@ -132,6 +133,7 @@ class ActivityTypeController extends Controller
             $messages = [
                 'required' => 'Please fill out this field.',
                 'date_format' => 'Invalid time format.',
+                'end_time.after' => 'End time must be greater than start time.'
             ];
 
             $request->validate($rules, $messages);
