@@ -62,6 +62,7 @@
                                         <th>Start Time</th>
                                         <th>End Time</th>
                                         <th>Slot</th>
+                                        <th>Creator</th>
                                     </thead>
 
                                     <tbody>
@@ -72,6 +73,7 @@
                                                 <td>{{ Carbon::parse($activity->start_time)->format('g:i A') }}</td>
                                                 <td>{{ Carbon::parse($activity->end_time)->format('g:i A') }}</td>
                                                 <td>{{ $activity->slot }}</td>
+                                                <td><a href="/user/staff/{{ $activity->created_by }}/profile">{{ $activity->creator }}</a></td>
                                             </tr>
                                         @endforeach
                                     </tbody>

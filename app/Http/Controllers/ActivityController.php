@@ -7,6 +7,7 @@ use Carbon;
 use Auth;
 use App\Activity;
 use App\ActivityType;
+use App\User;
 use Illuminate\Database\QueryException;
 
 class ActivityController extends Controller
@@ -20,7 +21,15 @@ class ActivityController extends Controller
         
 
         try {
-            $activities = Activity::orderBy('activity_date', 'desc')->get();
+            $activities = Activity::where('status', 'A')->orderBy('activity_date', 'desc')->get();
+
+            foreach($activities as $activity) {
+                $created_by = $activity->created_by;
+
+                $user = User::where('user_id', $created_by)->get(['profile_name'])->first();
+
+                $activity->creator = $user->profile_name;
+            }
         
             $data = [
                 'activities' => $activities,
@@ -31,7 +40,7 @@ class ActivityController extends Controller
         catch (\Exception $e) {
             return $e->getMessage();
         }
-        //return $data;
+        // return $data;
     }
 
     /**
