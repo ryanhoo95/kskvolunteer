@@ -15,8 +15,13 @@ class PagesController extends Controller
             $id = Auth::user()->usertype;
             $usertype = UserType::find($id);
 
-            if($usertype->usertype_name == "Volunteer" || Auth::user()->status == "I") {
-                return redirect('logout');
+            if($usertype->usertype_name == "Volunteer") {
+                Auth::logout();
+                return redirect('login')->with('error', 'Unauthorized access.');
+            }
+            else if(Auth::user()->status == "I") {
+                Auth::logout();
+                return redirect('login')->with('error', 'Your account has been deactivated. Please contact ADMIN for assistance.');
             }
             else {
                 return view('pages.dashboard');
