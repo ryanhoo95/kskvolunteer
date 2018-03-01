@@ -52,6 +52,12 @@ class ActivityController extends Controller
     public function show($id) {
         $activity = Activity::find($id);
 
+        $created_by = $activity->created_by;
+
+        $user = User::where('user_id', $created_by)->get(['profile_name'])->first();
+
+        $activity->creator = $user->profile_name;
+
         $data = [
             'activity' => $activity,
         ];
@@ -159,20 +165,20 @@ class ActivityController extends Controller
     }
 
     /**
-     * Show the form for editing the activity type.
+     * Show the form for editing the activity.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $activity_type = ActivityType::find($id);
+        $activity = Activity::find($id);
 
         $data = [
-            'activity_type' => $activity_type,
+            'activity' => $activity,
         ];
 
-        return view('activity_type.edit')->with('data', $data);
+        return view('activity.edit')->with('data', $data);
     }
 
     /**
@@ -188,45 +194,45 @@ class ActivityController extends Controller
             //validation
             $rules = [
                 'activity_title' => 'required',
+                'slot' => 'required|numeric',
+                'date' => 'required|date',
                 'start_time' => 'required|date_format:h:i A',
-                'end_time' => 'required|date_format:h:i A',
+                'end_time' => 'required|date_format:h:i A|after:start_time',
                 'description' => 'nullable',
                 'remark' => 'nullable',
             ];
 
             $messages = [
                 'required' => 'Please fill out this field.',
-                'date_format' => 'Invalid time format.',
+                'slot.numeric' => 'The slot can only contain numbers.',
+                'date' => 'Invalid date format.',
+                'start_time.date_format' => 'Invalid time format.',
+                'end_time.date_format' => 'Invalid time format.',
+                'end_time.after' => 'End time must be greater than start time.'
             ];
 
             $request->validate($rules, $messages);
 
-            $activity_type = ActivityType::find($id);
-            $activity_type->activity_title = $request->input('activity_title');
-            $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
-            $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
-            $activity_type->description = $request->input('description');
-            $activity_type->remark = $request->input('remark');
-            $activity_type->updated_by = Auth::user()->user_id;
-            $activity_type->save();
+            $activity = Activity::find($id);
+            $activity->activity_title = $request->input('activity_title');
+            $activity->slot = $request->input('slot');
+            $activity->activity_date = Carbon::parse($request->input('date'))->format('Y-m-d');
+            $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
+            $activity->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+            $activity->description = $request->input('description');
+            $activity->remark = $request->input('remark');
+            $activity->updated_by = Auth::user()->user_id;
+            $activity->save();
             
-            return redirect('/activity_type/'.$id)->with('success', 'Template has been updated.');
+            return redirect('/activity/'.$id)->with('success', 'Activity has been updated.');
         }
-        else if($action == "activate") {
-            $activity_type = ActivityType::find($id);
-            $activity_type->status = "A";
-            $activity_type->updated_by = Auth::user()->user_id;
-            $activity_type->save();
+        else if($action == "cancel") {
+            $activity = Activity::find($id);
+            $activity->status = "I";
+            $activity->updated_by = Auth::user()->user_id;
+            $activity->save();
 
-            return redirect('/activity_type/'.$id)->with('success', 'Template has been activated.');
-        }
-        else if($action == "deactivate") {
-            $activity_type = ActivityType::find($id);
-            $activity_type->status = "I";
-            $activity_type->updated_by = Auth::user()->user_id;
-            $activity_type->save();
-
-            return redirect('/activity_type/'.$id)->with('success', 'Template has been deactivated.');
+            return redirect('/activity')->with('success', 'Activity has been cancelled.');
         }
     }
 }

@@ -109,6 +109,13 @@
                     format: 'dd M yyyy'
                 })
 
+                 //date picker min
+                 $('#datepicker_min').datepicker({
+                    startDate: today,
+                    autoclose: true,
+                    format: 'dd M yyyy',
+                })
+
                 //Timepicker
                 $('.timepicker').timepicker({
                     showInputs: false

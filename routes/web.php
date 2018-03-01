@@ -51,5 +51,5 @@ Route::get('/activity/create', ['as' => 'activity.create', 'uses' => 'ActivityCo
 Route::get('/activity/{id}', ['as' => 'activity.show', 'uses' => 'ActivityController@show']);
 Route::post('/activity', ['as' => 'activity.store', 'uses' => 'ActivityController@store']);
 Route::get('/activity/{id}/edit', ['as' => 'activity.edit', 'uses' => 'ActivityController@edit']);
-Route::put('/activity/{id}', ['as' => 'activity.update', 'uses' => 'ActivityController@update']);
+Route::put('/activity/{id}/{action}', ['as' => 'activity.update', 'uses' => 'ActivityController@update']);
 
