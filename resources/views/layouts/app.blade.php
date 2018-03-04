@@ -34,6 +34,8 @@
     <link rel="stylesheet" href="{{asset("css/admin-lte/dist/css/skins/skin-red.min.css")}}">
     <!-- iCheck for checkboxes and radio inputs -->
      <link rel="stylesheet" href="{{asset("css/admin-lte/plugins/iCheck/all.css")}}">
+     <!-- password strenth meter -->
+     <link rel="stylesheet" href="{{asset("css/admin-lte/plugins/password-strength-meter/password.min.css")}}">
 
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
@@ -94,6 +96,8 @@
         <script src="{{asset("css/admin-lte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script>
         <!-- iCheck 1.0.1 -->
         <script src="{{asset("css/admin-lte/plugins/iCheck/icheck.min.js")}}"></script>
+        <!-- password strength meter -->
+        <script src="{{asset("css/admin-lte/plugins/password-strength-meter/password.min.js")}}"></script>
 
         <script type="text/javascript">
             $(function () {
@@ -128,6 +132,23 @@
                         format: 'DD MMM YYYY'
                     }
                 })
+
+                //password strength meter
+                $('#password').password({
+                    shortPass: 'The password is too short',
+                    badPass: 'Weak; try combining letters & numbers',
+                    goodPass: 'Medium; try using special charecters',
+                    strongPass: 'Strong password',
+                    containsUsername: 'The password contains the username',
+                    enterPass: null,
+                    showPercent: false,
+                    showText: true, // shows the text tips 
+                    animate: true, // whether or not to animate the progress bar on input blur/focus 
+                    animateSpeed: 'fast', // the above animation speed 
+                    username: false, // select the username field (selector or jQuery instance) for better password checks 
+                    usernamePartialMatch: true, // whether to check for username partials 
+                    minimumLength: 8 // minimum password length (below this threshold, the score is 0) 
+                });
             })
         </script>
     </div>

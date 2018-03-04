@@ -46,7 +46,7 @@
                                 <!-- new password -->
                                 <div class="form-group has-feedback {{ $errors->has('new_password') ? ' has-error' : '' }}">
                                     {{Form::label('new_password', 'New Password')}}
-                                    {{Form::password('new_password', ['class' => 'form-control', 'placeholder' => 'Enter new password', 'maxLength' => 20])}}
+                                    {{Form::password('new_password', ['class' => 'form-control', 'placeholder' => 'Enter new password', 'maxLength' => 20, 'id' => 'password'])}}
 
                                     @if ($errors->has('new_password'))
                                         <span class="help-block">
