@@ -1,5 +1,8 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header('Access-Control-Allow-Headers: content-type');
+
 use Illuminate\Http\Request;
 
 /*
@@ -13,6 +16,18 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::get('/users', ['as' => 'api.test', 'uses' => 'PagesController@api']);
+Route::get('/user/{id}', ['as' => 'api.get', 'uses' => 'PagesController@show']);
+
+//login
+Route::post('/login', ['as' => 'api.login', 'uses' => 'ApiController@login']);
+
+//logout
+Route::post('/logout', ['as' => 'api.logout', 'uses' => 'ApiController@logout']);
+
+//register
+Route::post('/register', ['as' => 'api.register', 'uses' => 'ApiController@register']);
