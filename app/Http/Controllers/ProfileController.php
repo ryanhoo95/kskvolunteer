@@ -155,7 +155,7 @@ class ProfileController extends Controller
      */
     public function updatePassword(Request $request, $id) {
         //check current password
-        if(!Hash::check($request->current_password, Auth::user()->password)) {
+        if(!Hash::check($request->input("current_password"), Auth::user()->password)) {
             return back()->with('error', 'Current password is mismatched.');
         }
         else {

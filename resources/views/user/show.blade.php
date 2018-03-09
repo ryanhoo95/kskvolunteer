@@ -102,7 +102,7 @@
                                 @if (AppHelper::getUserRole($data['user']->usertype) == "Volunteer" && $data['volunteer_profile'])
                                     <tr>
                                         <td><b>Emergency Contact Person</b></td>
-                                        <td>{{ $data['volunteer_profile']->emergency_name }} ({{ $data['volunteer_profile']->emergency_relation }}</td>
+                                        <td>{{ $data['volunteer_profile']->emergency_name }} ({{ $data['volunteer_profile']->emergency_relation }})</td>
                                     </tr>
 
                                     <tr>
