@@ -31,3 +31,6 @@ Route::post('/logout', ['as' => 'api.logout', 'uses' => 'ApiController@logout'])
 
 //register
 Route::post('/register', ['as' => 'api.register', 'uses' => 'ApiController@register']);
+
+//get volunteer profile
+Route::post('/getVolunteerProfile', ['as' => 'api.getVolunteerProfile', 'uses' => 'ApiController@getVolunteerProfile']);

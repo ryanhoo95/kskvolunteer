@@ -33,9 +33,11 @@ class ApiController extends Controller
                 ];
             }
             else if(Hash::check($request->input('password'), $user->password)) {
-                $api_token = bcrypt($user->user_id + time());
+                $api_token = bcrypt($user->user_id.time());
                 $user->api_token = $api_token;
                 $user->save();
+
+                $user->image_url = "http://192.168.43.139/storage/profile_image/".$user->profile_image;
 
                 $data = [
                     'status' => 'success',
@@ -149,6 +151,60 @@ class ApiController extends Controller
             'status' => 'success',
             'data' => $insertedUser
         ];
+        return response()->json($data);
+    }
+
+    //get volunteer profile
+    public function getVolunteerProfile(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get()->first();
+
+        if($user) {
+            $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)->get()->first();
+
+            if($volunteerProfile) {
+                $profile = new User;
+                $profile->full_name = $user->full_name;
+                $profile->profile_name = $user->profile_name;
+                $profile->join_date = Carbon::parse($user->created_by)->format('d M Y');
+                $profile->email = $user->email;
+                $profile->date_of_birth = Carbon::parse($user->date_of_birth)->format('d M Y');
+                $profile->date_of_birth_iso = Carbon::parse($user->date_of_birth)->format('Y-m-d');;
+
+                if($user->gender == "M") {
+                    $profile->gender = "Male";
+                }
+                else {
+                    $profile->gender = "Female";
+                }
+
+                $profile->ic_passport = $user->ic_passport;
+                $profile->address = $user->address;
+                $profile->phone_no = $user->phone_no;
+                $profile->profile_image = "http://192.168.43.139/storage/profile_image/".$user->profile_image;
+                $profile->phone_no = $user->phone_no;
+                $profile->emergency_contact = $volunteerProfile->emergency_contact;
+                $profile->emergency_name = $volunteerProfile->emergency_name;
+                $profile->emergency_relation = $volunteerProfile->emergency_relation;
+
+                $data = [
+                    'status' => 'success',
+                    'data' => $profile
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Error in retrieving data.'
+                ];
+            }
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
         return response()->json($data);
     }
 }
