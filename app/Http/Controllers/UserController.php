@@ -168,6 +168,7 @@ class UserController extends Controller
         else if($action == "deactivate") {
             $user = User::find($id);
             $user->status = "I";
+            $user->api_token = null;
             $user->save();
 
             return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been deactivated.');

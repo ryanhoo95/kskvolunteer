@@ -26,6 +26,12 @@ class ApiController extends Controller
                     'message' => 'Your account has been deactivated. Please contact administrator for assistance.'
                 ];
             }
+            else if($user->api_token != null) {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Your account has been login in other device. In you insist to login from this device, please logout from other device first.'
+                ];
+            }
             else if(Hash::check($request->input('password'), $user->password)) {
                 $api_token = bcrypt($user->user_id + time());
                 $user->api_token = $api_token;
@@ -67,7 +73,7 @@ class ApiController extends Controller
         }
         else {
             $data = [
-                'status' => 'fail',
+                'status' => 'invalid',
                 'message' => 'Invalid session.'
             ];
         }
