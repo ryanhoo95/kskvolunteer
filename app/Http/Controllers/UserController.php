@@ -125,7 +125,7 @@ class UserController extends Controller
         $user->profile_name = $request->input('full_name');
         $user->email = $request->input('email');
         $user->ic_passport = $ic_passport_formmated;
-        $user->password = bcrypt($request->input($ic_passport_formmated));
+        $user->password = bcrypt($ic_passport_formmated);
         $user->gender = $request->input('gender');
         $user->date_of_birth = Carbon::parse($request->input('date_of_birth'))->format('Y-m-d');
         $user->phone_no = $request->input('phone_no');
