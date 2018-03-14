@@ -338,4 +338,36 @@ class ApiController extends Controller
             $path = $request->file('profile_image')->storeAs('public/profile_image', $request->input('file_name'));
         }
     }
+
+    //reset password
+    public function resetPassword(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get()->first();
+
+        if($user) {
+            //check current password
+            if(!Hash::check($request->input("current_password"), $user->password)) {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Current password is mismatched. If you forget the password, you may contact administrator to reset the password.'
+                ];
+            }
+            else {
+                $user->password = bcrypt($request->input('new_password'));
+                $user->save();
+
+                $data = [
+                    'status' => 'success',
+                    'message' => 'Password has been reset.'
+                ];
+            }
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
 }
