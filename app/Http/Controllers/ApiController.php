@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Helpers\AppHelper;
 use App\User;
 use App\UserType;
@@ -224,6 +225,7 @@ class ApiController extends Controller
 
             if($volunteerProfile) {
                 $profile = new User;
+                $profile->user_id = $user->user_id;
                 $profile->full_name = $user->full_name;
                 $profile->profile_name = $user->profile_name;
                 $profile->join_date = Carbon::parse($user->created_by)->format('d M Y');
@@ -263,6 +265,38 @@ class ApiController extends Controller
             $data = [
                 'status' => 'invalid',
                 'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //upload profile image
+    public function uploadProfileImage(Request $request) {
+        if($request->hasFile('profile_image')) {
+             // Get filename withe the extention
+             //$fileNameWithExt = $request->file('profile_image')->getClientOriginalName();
+
+             // Uplaod image
+            $path = $request->file('profile_image')->storeAs('public/profile_image', $request->input('file_name'));
+
+            if($path) {
+                $data = [
+                    'status' => 'success',
+                    'message' => 'upload complete'
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'uplaod fail'
+                ];
+            }
+        }
+        else {
+            $data = [
+                'status' => 'fail',
+                'message' => 'no file found'
             ];
         }
 
