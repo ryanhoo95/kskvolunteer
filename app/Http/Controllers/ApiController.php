@@ -15,6 +15,20 @@ use Illuminate\Support\Facades\Hash;
 
 class ApiController extends Controller
 {
+    //test
+    public function test(Request $request) {
+        //format ic password
+        $ic_passport = $request->input('ic_passport');
+        $ic_passport_replace = str_replace('-', '', $ic_passport);
+        $ic_passport_formmated = strtoupper($ic_passport_replace);
+
+        $data = [
+            'result' => $ic_passport_formmated
+        ];
+
+        return response()->json($data);
+    }
+
     //login
     public function login(Request $request) {
         $user = User::where('email', $request->input('email'))->get()->first();
@@ -83,8 +97,8 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
-    //register
-    public function register(Request $request) {
+    //check for unique email
+    public function checkUniqueEmail(Request $request) {
         //check for unique email
         $userByEmail = User::where('email', $request->input('email'))->get()->first();
 
@@ -93,10 +107,19 @@ class ApiController extends Controller
                 'status' => 'fail',
                 'message' => 'This email is already taken. Please use another email.'
             ];
-
-            return response()->json($data);
+        }
+        else {
+            $data = [
+                'status' => 'success',
+                'message' => 'This email can be used.'
+            ];
         }
 
+        return response()->json($data);
+    }
+
+    //check for unique ic passport
+    public function checkUniqueICPassport(Request $request) {
         //check for unique ic passport
         $userByIc = User::where('ic_passport', $request->input('ic_passport'))->get()->first();
 
@@ -105,9 +128,47 @@ class ApiController extends Controller
                 'status' => 'fail',
                 'message' => 'This IC or passport no. is already taken. Please contact administrator for assistance.'
             ];
-
-            return response()->json($data);
         }
+        else {
+            $data = [
+                'status' => 'success',
+                'message' => 'This IC or passport no. can be used.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //register
+    public function register(Request $request) {
+        //check for unique email
+        // $userByEmail = User::where('email', $request->input('email'))->get()->first();
+
+        // if($userByEmail) {
+        //     $data = [
+        //         'status' => 'fail',
+        //         'message' => 'This email is already taken. Please use another email.'
+        //     ];
+
+        //     return response()->json($data);
+        // }
+
+        // //check for unique ic passport
+        // $userByIc = User::where('ic_passport', $request->input('ic_passport'))->get()->first();
+
+        // if($userByIc) {
+        //     $data = [
+        //         'status' => 'fail',
+        //         'message' => 'This IC or passport no. is already taken. Please contact administrator for assistance.'
+        //     ];
+
+        //     return response()->json($data);
+        // }
+
+        //format ic passport
+        $ic_passport = $request->input('ic_passport');
+        $ic_passport_replace = str_replace('-', '', $ic_passport);
+        $ic_passport_formmated = strtoupper($ic_passport_replace);
 
         //register the user if checking passed
         $user = new User;
@@ -116,7 +177,7 @@ class ApiController extends Controller
         $user->full_name = $request->input('full_name');
         $user->profile_name = $request->input('profile_name');
         $user->gender = $request->input('gender');
-        $user->ic_passport = $request->input('ic_passport');
+        $user->ic_passport = $ic_passport_formmated;
         $user->date_of_birth = Carbon::parse($request->input('date_of_birth'))->format('Y-m-d');
         $user->address = $request->input('address');
         $user->phone_no = $request->input('phone_no');
