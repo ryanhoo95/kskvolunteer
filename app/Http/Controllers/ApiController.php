@@ -271,6 +271,63 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
+    //update volunteer profile
+    public function updateVolunteerProfile(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get()->first();
+
+        if($user) {
+            $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)->get()->first();
+
+            if($volunteerProfile) {
+                //save user data
+                $user->full_name = $request->input('full_name');
+                $user->profile_name = $request->input('profile_name');
+                $user->gender = $request->input('gender');
+                $user->date_of_birth = Carbon::parse($request->input('date_of_birth'))->format('Y-m-d');
+                $user->address = $request->input('address');
+                $user->phone_no = $request->input('phone_no');
+
+                if($request->input('profile_image') == "null") {
+                    //do nothing since nothing to upload
+                }
+                else {
+                     //delete current profile image
+                     Storage::delete('public/profile_image/'.$user->profile_image);
+
+                    $user->profile_image = $request->input("profile_image");
+                }
+                
+                $user->save();
+
+                //save volunteer profile data
+                $volunteerProfile->emergency_contact = $request->input('emergency_contact');
+                $volunteerProfile->emergency_name = $request->input('emergency_name');
+                $volunteerProfile->emergency_relation = $request->input('emergency_relation');
+
+                $volunteerProfile->save();
+
+                $data = [
+                    'status' => 'success',
+                    'message' => 'Profile is updated.'
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Error in updating profile.'
+                ];
+            }
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
     //upload profile image
     public function uploadProfileImage(Request $request) {
         if($request->hasFile('profile_image')) {
@@ -279,27 +336,6 @@ class ApiController extends Controller
 
              // Uplaod image
             $path = $request->file('profile_image')->storeAs('public/profile_image', $request->input('file_name'));
-
-            if($path) {
-                $data = [
-                    'status' => 'success',
-                    'message' => 'upload complete'
-                ];
-            }
-            else {
-                $data = [
-                    'status' => 'fail',
-                    'message' => 'uplaod fail'
-                ];
-            }
         }
-        else {
-            $data = [
-                'status' => 'fail',
-                'message' => 'no file found'
-            ];
-        }
-
-        return response()->json($data);
     }
 }
