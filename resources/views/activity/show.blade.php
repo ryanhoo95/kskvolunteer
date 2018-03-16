@@ -87,6 +87,10 @@
                         <?php
                             $show_action = true;
 
+                            if(Carbon::today() >= Carbon::parse($data['activity']->activity_date)) {
+                                $show_action = false;
+                            }
+                            
                             if(AppHelper::currentUserRole() == "Staff" && Auth::user()->user_id != $data['activity']->created_by) {
                                 $show_action = false;
                             }
