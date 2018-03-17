@@ -102,6 +102,9 @@
         <script type="text/javascript">
             $(function () {
                 var today = new Date();
+                var tomorrow = new Date();
+                tomorrow.setDate(today.getDate()+1);
+
                 //data table
                 $('#datatable').DataTable({
                     "order": []
@@ -127,7 +130,9 @@
 
                 //Date range picker
                 $('#date_range').daterangepicker({
-                    minDate: today,
+                    minDate: tomorrow,
+                    startDate: tomorrow,
+                    endDate: tomorrow,
                     locale: {
                         format: 'DD MMM YYYY'
                     }
