@@ -581,8 +581,8 @@ class ApiController extends Controller
         $date = Carbon::parse($request->input('date'))->format('Y-m-d');
         $start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
         $end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
-        $start = Carbon::parse($request->input('date')." ".$request->input('start_time'));
-        $end = Carbon::parse($request->input('date')." ".$request->input('end_time'));
+        // $start = Carbon::parse($request->input('date')." ".$request->input('start_time'));
+        // $end = Carbon::parse($request->input('date')." ".$request->input('end_time'));
 
         //used to check for clashing
         $activities = Activity::where('activity_date', $date)->where(function ($p) use ($start_time, $end_time) {
@@ -714,6 +714,91 @@ class ApiController extends Controller
                 ];
             }
             
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //get active participation
+    public function getActiveParticipations(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $today = Carbon::today()->format('Y-m-d');
+            $current_time = Carbon::now()->format('H:i:s');
+
+            $participations = Participation::where('participant_id', $user->user_id)->where('status', 'J')->get(['participation_id', 'activity_id', 'invitation_code']);
+
+            if($participations) {
+                foreach($participations as $participation) {
+                    $activity = Activity::where('activity_id', $participation->activity_id)->where('status', 'A')->get(['activity_title', 'activity_date', 'start_time', 'end_time', 'slot', 'description', 'remark'])->first();
+
+                    if($activity) {
+                        $participation->display = "flex";
+                        $participation->action = "Withdraw";
+
+                        //check whetehr activity already started
+                        if($activity->activity_date == $today && $activity->start_time < $current_time) {
+                            $participation->action = "None";
+                        }
+                        else {
+                            $participation->action = "Withdraw";
+                        }
+
+                        //format description and remark
+                        if($activity->description == null) {
+                            $participation->description = "-";
+                        }
+                        else {
+                            $participation->description = $activity->description;
+                        }
+
+                        if($activity->remark == null) {
+                            $participation->remark = "-";
+                        }
+                        else {
+                            $participation->remark = $activity->remark;
+                        }
+
+                        $participation->activity_title = $activity->activity_title;
+                        $participation->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
+                        $participation->start_time = Carbon::parse($activity->start_time)->format('h:i A');
+                        $participation->end_time = Carbon::parse($activity->end_time)->format('h:i A');
+                        $participation->slot = $activity->slot;
+
+                        //get participation num
+                        $participation_num = Participation::where('activity_id', $participation->activity_id)->where(function ($q) {
+                            $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                        })->count();
+
+                        $participation->participation_num = $participation_num;
+
+                        if($participation_num == $activity->slot) {
+                            $participation->participation_status = "Full";
+                        }
+                        else {
+                            $participation->participation_status = "Available";
+                        }
+
+
+                    }
+                    else {
+                        //no need to display inactive activity
+                        $participation->display = "none";
+                    }
+                }
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $participations
+            ];
         }
         else {
             $data = [

@@ -65,3 +65,6 @@ Route::post('/joinActivity', ['as' => 'api.joinActivity', 'uses' => 'ApiControll
 
 // withdraw activity
 Route::post('/withdrawActivity', ['as' => 'api.withdrawActivity', 'uses' => 'ApiController@withdrawActivity']);
+
+// get active participation
+Route::post('/getActiveParticipations', ['as' => 'api.getActiveParticipations', 'uses' => 'ApiController@getActiveParticipations']);
