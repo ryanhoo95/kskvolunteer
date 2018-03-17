@@ -15,6 +15,7 @@ use App\Participation;
 use App\Invitation;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class ApiController extends Controller
 {
@@ -416,7 +417,7 @@ class ApiController extends Controller
             $today = Carbon::today()->format('Y-m-d');
             $current_time = Carbon::now()->format('H:i:s');
 
-            $todayActivities = Activity::where('activity_date', $today)->where('start_time', '>', $current_time)->where('status', 'A')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+            $todayActivities = Activity::where('activity_date', $today)->where('start_time', '>', $current_time)->where('status', 'A')->orderBy('start_time', 'asc')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
 
             if($todayActivities) {
                 foreach($todayActivities as $todayActivity) {
@@ -498,10 +499,10 @@ class ApiController extends Controller
 
             //if selected date is today, get only the onwards available activities
             if($date == $today) {
-                $activities = Activity::where('activity_date', $date)->where('start_time', '>', $current_time)->where('status', 'A')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+                $activities = Activity::where('activity_date', $date)->where('start_time', '>', $current_time)->where('status', 'A')->orderBy('start_time', 'asc')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
             }
             else {
-                $activities = Activity::where('activity_date', $date)->where('status', 'A')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+                $activities = Activity::where('activity_date', $date)->where('status', 'A')->orderBy('start_time', 'asc')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
             }
            
 
@@ -725,8 +726,84 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
+     //get active participation
+     public function getActiveParticipations(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $today = Carbon::today()->format('Y-m-d');
+            $current_time = Carbon::now()->format('H:i:s');
+
+            $participations = DB::table('participation')
+                            ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+                            ->where('activity.status', 'A')
+                            ->where('participation.participant_id', $user->user_id)
+                            ->where('participation.status', 'J')
+                            ->select('participation.participation_id', 'participation.activity_id', 'participation.invitation_code',
+                            'activity.activity_title', 'activity.start_time', 'activity.end_time', 'activity.slot', 'activity.description',
+                            'activity.remark', 'activity.activity_date')
+                            ->orderBy('activity.activity_date', 'asc')
+                            ->orderBy('activity.start_time', 'asc')
+                            ->get();
+
+            if($participations) {
+                foreach($participations as $participation) {
+
+                    //check whetehr activity already started
+                    if($participation->activity_date == $today && $participation->start_time < $current_time) {
+                        $participation->action = "None";
+                    }
+                    else {
+                        $participation->action = "Withdraw";
+                    }
+
+                    //format description and remark
+                    if($participation->description == null) {
+                        $participation->description = "-";
+                    }
+
+                    if($participation->remark == null) {
+                        $participation->remark = "-";
+                    }
+
+                    $participation->activity_date = Carbon::parse($participation->activity_date)->format('d M Y');
+                    $participation->start_time = Carbon::parse($participation->start_time)->format('h:i A');
+                    $participation->end_time = Carbon::parse($participation->end_time)->format('h:i A');
+
+                    //get participation num
+                    $participation_num = Participation::where('activity_id', $participation->activity_id)->where(function ($q) {
+                        $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                    })->count();
+
+                    $participation->participation_num = $participation_num;
+
+                    if($participation_num == $participation->slot) {
+                        $participation->participation_status = "Full";
+                    }
+                    else {
+                        $participation->participation_status = "Available";
+                    }
+
+                }
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $participations
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
     //get active participation
-    public function getActiveParticipations(Request $request) {
+    public function getActiveParticipations2(Request $request) {
         $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
         if($user) {
