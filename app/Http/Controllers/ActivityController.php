@@ -213,12 +213,17 @@ class ActivityController extends Controller
 
             $request->validate($rules, $messages);
 
+            $start_time = Carbon::parse($request->input('start_time'));
+            $end_time = Carbon::parse($request->input('end_time'));
+            $duration = $end_time->diffInHours($start_time);
+
             $activity = Activity::find($id);
             $activity->activity_title = $request->input('activity_title');
             $activity->slot = $request->input('slot');
             $activity->activity_date = Carbon::parse($request->input('date'))->format('Y-m-d');
             $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $activity->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+            $activity->duration = $duration;
             $activity->description = $request->input('description');
             $activity->remark = $request->input('remark');
             $activity->updated_by = Auth::user()->user_id;
