@@ -21,4 +21,48 @@ class AppHelper
 
         return $usertype->usertype_name;
     }
+
+    //get the url to profile storage
+    public static function getProfileStorageUrl() {
+        return "http://192.168.43.139/storage/profile_image/";
+    }
+
+    //get participation response name
+    public static function getParticipationResponse($status) {
+        switch ($status) {
+            case 'A':
+                $response = "Absent";
+                break;
+            case 'P':
+                $response = "Present";
+                break;
+            case 'J':
+                $response = "Join";
+                break;
+            case 'W':
+                $response = "Withdraw";
+                break;
+        }
+
+        return $response;
+    }
+
+    //get allowed action based on participation response
+    public static function getParticipationAction($response) {
+        switch ($response) {
+            case 'Absent':
+            case 'Present':
+                $action = "None";
+                break;
+            case 'Join':
+                $action = "Withdraw";
+                break;
+            case 'None';
+            case 'Withdraw';
+                $action = "Join";
+                break;
+        }
+
+        return $action;
+    }
 }

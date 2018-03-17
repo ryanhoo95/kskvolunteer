@@ -20,11 +20,12 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-Route::get('/users', ['as' => 'api.test', 'uses' => 'PagesController@api']);
-Route::get('/user/{id}', ['as' => 'api.get', 'uses' => 'PagesController@show']);
 
 //test
 Route::post('/test', ['as' => 'api.test2', 'uses' => 'ApiController@test']);
+Route::get('/users', ['as' => 'api.test', 'uses' => 'PagesController@api']);
+Route::get('/user/{id}', ['as' => 'api.get', 'uses' => 'PagesController@show']);
+Route::get('/testTime', ['as' => 'api.testTime', 'uses' => 'ApiController@testTime']);
 
 //login
 Route::post('/login', ['as' => 'api.login', 'uses' => 'ApiController@login']);
@@ -49,3 +50,18 @@ Route::post('/updateVolunteerProfile', ['as' => 'api.updateVolunteerProfile', 'u
 
 //upload profile image
 Route::post('/uploadProfileImage', ['as' => 'api.uploadProfileImage', 'uses' => 'ApiController@uploadProfileImage']);
+
+//reset password
+Route::post('/resetPassword', ['as' => 'api.resetPassword', 'uses' => 'ApiController@resetPassword']);
+
+//get today activities
+Route::post('/getTodayActivities', ['as' => 'api.getTodayActivities', 'uses' => 'ApiController@getTodayActivities']);
+
+//get activities by date
+Route::post('/getActivitiesByDate', ['as' => 'api.getActivitiesByDate', 'uses' => 'ApiController@getActivitiesByDate']);
+
+// join activity
+Route::post('/joinActivity', ['as' => 'api.joinActivity', 'uses' => 'ApiController@joinActivity']);
+
+// withdraw activity
+Route::post('/withdrawActivity', ['as' => 'api.withdrawActivity', 'uses' => 'ApiController@withdrawActivity']);

@@ -11,11 +11,30 @@ use App\VolunteerProfile;
 use Carbon\Carbon;
 use App\Activity;
 use App\ActivityType;
+use App\Participation;
+use App\Invitation;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 
 class ApiController extends Controller
 {
+    //template
+    public function template(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
     //test
     public function test(Request $request) {
         //format ic password
@@ -25,6 +44,24 @@ class ApiController extends Controller
 
         $data = [
             'result' => $ic_passport_formmated
+        ];
+
+        return response()->json($data);
+    }
+
+    //test time
+    public function testTime() {
+        $now = Carbon::now();
+        $date = "15 Mar 2018";
+        $time = "8:00 PM";
+        $date_time = $date." ".$time;
+        $parse = Carbon::parse($date_time);
+        $compare = ($now > $parse);  
+
+        $data = [
+            'now' => $now,
+            'parse' => $parse,
+            'compare' => $compare
         ];
 
         return response()->json($data);
@@ -52,7 +89,7 @@ class ApiController extends Controller
                 $user->api_token = $api_token;
                 $user->save();
 
-                $user->image_url = "http://192.168.43.139/storage/profile_image/".$user->profile_image;
+                $user->image_url = AppHelper::getProfileStorageUrl().$user->profile_image;
 
                 $data = [
                     'status' => 'success',
@@ -78,7 +115,7 @@ class ApiController extends Controller
 
     //logout
     public function logout(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get()->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
         if($user) {
             $user->api_token = null;
@@ -243,7 +280,7 @@ class ApiController extends Controller
                 $profile->ic_passport = $user->ic_passport;
                 $profile->address = $user->address;
                 $profile->phone_no = $user->phone_no;
-                $profile->profile_image = "http://192.168.43.139/storage/profile_image/".$user->profile_image;
+                $profile->profile_image = AppHelper::getProfileStorageUrl().$user->profile_image;
                 $profile->phone_no = $user->phone_no;
                 $profile->emergency_contact = $volunteerProfile->emergency_contact;
                 $profile->emergency_name = $volunteerProfile->emergency_name;
@@ -273,7 +310,7 @@ class ApiController extends Controller
 
     //update volunteer profile
     public function updateVolunteerProfile(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get()->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
         if($user) {
             $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)->get()->first();
@@ -341,7 +378,7 @@ class ApiController extends Controller
 
     //reset password
     public function resetPassword(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get()->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
         if($user) {
             //check current password
@@ -360,6 +397,267 @@ class ApiController extends Controller
                     'message' => 'Password has been reset.'
                 ];
             }
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //get today activities
+    public function getTodayActivities(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $today = Carbon::today()->format('Y-m-d');
+            $current_time = Carbon::now()->format('H:i:s');
+
+            $todayActivities = Activity::where('activity_date', $today)->where('start_time', '>', $current_time)->where('status', 'A')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+
+            if($todayActivities) {
+                foreach($todayActivities as $todayActivity) {
+                    //format the time
+                    $todayActivity->activity_date = Carbon::parse($todayActivity->activity_date)->format('d M Y');
+                    $todayActivity->start_time = Carbon::parse($todayActivity->start_time)->format('h:i A');
+                    $todayActivity->end_time = Carbon::parse($todayActivity->end_time)->format('h:i A');
+
+                    //format description and remark
+                    if($todayActivity->description == null) {
+                        $todayActivity->description = "-";
+                    }
+
+                    if($todayActivity->remark == null) {
+                        $todayActivity->remark = "-";
+                    }
+
+                    //check the participation status of each activities for the user
+                    $participation = Participation::where('activity_id', $todayActivity->activity_id)->where('participant_id', $user->user_id)->get(['participation_id', 'status', 'invitation_code'])->first();
+
+                    if($participation) {
+                        $todayActivity->response = AppHelper::getParticipationResponse($participation->status);
+                        $todayActivity->action = AppHelper::getParticipationAction($todayActivity->response);
+                        $todayActivity->participation_id = $participation->participation_id;
+                        $todayActivity->invitation_code = $participation->invitation_code;
+                    }
+                    else {
+                        $todayActivity->response = "None";
+                        $todayActivity->action = AppHelper::getParticipationAction($todayActivity->response);
+                        $todayActivity->participation_id = "None";
+                        $todayActivity->invitation_code = "None";
+                    }
+
+                    //get participation num
+                    $participation_num = Participation::where('activity_id', $todayActivity->activity_id)->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J')->count();
+
+                    $todayActivity->participation_num = $participation_num;
+
+                    if($participation_num == $todayActivity->slot) {
+                        $todayActivity->participation_status = "Full";
+
+                        //cannot join if full
+                        if($todayActivity->action == "Join") {
+                            $todayActivity->action = "None";
+                        }
+                    }
+                    else {
+                        $todayActivity->participation_status = "Available";
+                    }
+                }
+                
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $todayActivities
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //get activities by date
+    public function getActivitiesByDate(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $today = Carbon::today()->format('Y-m-d');
+            $current_time = Carbon::now()->format('H:i:s');
+
+            $todayActivities = Activity::where('activity_date', $today)->where('start_time', '>', $current_time)->where('status', 'A')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+
+            if($todayActivities) {
+                foreach($todayActivities as $todayActivity) {
+                    //format the time
+                    $todayActivity->activity_date = Carbon::parse($todayActivity->activity_date)->format('d M Y');
+                    $todayActivity->start_time = Carbon::parse($todayActivity->start_time)->format('h:i A');
+                    $todayActivity->end_time = Carbon::parse($todayActivity->end_time)->format('h:i A');
+
+                    //format description and remark
+                    if($todayActivity->description == null) {
+                        $todayActivity->description = "-";
+                    }
+
+                    if($todayActivity->remark == null) {
+                        $todayActivity->remark = "-";
+                    }
+
+                    //check the participation status of each activities for the user
+                    $participation = Participation::where('activity_id', $todayActivity->activity_id)->where('participant_id', $user->user_id)->get(['participation_id', 'status', 'invitation_code'])->first();
+
+                    if($participation) {
+                        $todayActivity->response = AppHelper::getParticipationResponse($participation->status);
+                        $todayActivity->action = AppHelper::getParticipationAction($todayActivity->response);
+                        $todayActivity->participation_id = $participation->participation_id;
+                        $todayActivity->invitation_code = $participation->invitation_code;
+                    }
+                    else {
+                        $todayActivity->response = "None";
+                        $todayActivity->action = AppHelper::getParticipationAction($todayActivity->response);
+                        $todayActivity->participation_id = "None";
+                        $todayActivity->invitation_code = "None";
+                    }
+
+                    //get participation num
+                    $participation_num = Participation::where('activity_id', $todayActivity->activity_id)->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J')->count();
+
+                    $todayActivity->participation_num = $participation_num;
+
+                    if($participation_num == $todayActivity->slot) {
+                        $todayActivity->participation_status = "Full";
+
+                        //cannot join if full
+                        if($todayActivity->action == "Join") {
+                            $todayActivity->action = "None";
+                        }
+                    }
+                    else {
+                        $todayActivity->participation_status = "Available";
+                    }
+                }
+                
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $todayActivities
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //join activity
+    public function joinActivity(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+        $activity = Activity::where('activity_id', $request->input('activity_id'))->get(['slot'])->first();
+
+        if($user) {
+            if($activity) {
+                //get participation num
+                $participation_num = Participation::where('activity_id', $request->input('activity-id'))->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J')->count();
+
+                //slot is full
+                if($participation_num == $activity->slot) {
+                    $data = [
+                        'status' => 'fail',
+                        'message' => 'The slot for this activity is already full.'
+                    ];
+                }
+                else { //the activity is available
+                    if($request->input('participation_id') == "None") {
+                        //create a new participation
+                        $participation = new Participation;
+                        $participation->participant_id = $user->user_id;
+                        $participation->activity_id = $request->input('activity_id');
+                        $participation->status = "J";
+                        $participation->invitation_code = $user->user_id."INV_".time();
+                        $participation->updated_by = $user->user_id;
+                        $participation->save();
+        
+                        $data = [
+                            'status' => 'success',
+                            'message' => 'You have joined the selected activity.'
+                        ];
+                    }
+                    else {
+                        //update the participation
+                        $participation = Participation::where('participation_id', $request->input('participation_id'))->get()->first();
+        
+                        if($participation) {
+                            $participation->status = "J";
+                            $participation->save();
+        
+                            $data = [
+                                'status' => 'success',
+                                'message' => 'You have joined the selected activity.'
+                            ];
+                        }
+                        else {
+                            $data = [
+                                'status' => 'fail',
+                                'message' => 'Unable to join the selected activity. Please try again later.'
+                            ];
+                        }
+                    }
+                }
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Unable to join the selected activity. Please try again later.'
+                ];
+            }
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //withdraw activity
+    public function withdrawActivity(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            //update participation
+            $participation = Participation::where('participation_id', $request->input('participation_id'))->get()->first();
+
+            if($participation) {
+                $participation->status = "W";
+                $participation->save();
+
+                $data = [
+                    'status' => 'success',
+                    'message' => 'You have withdrawn from the selected activity.'
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Unable to withdraw from the activity. Please try again later.'
+                ];
+            }
+            
         }
         else {
             $data = [
