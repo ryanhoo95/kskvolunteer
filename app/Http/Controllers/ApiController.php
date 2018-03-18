@@ -329,8 +329,10 @@ class ApiController extends Controller
                     //do nothing since nothing to upload
                 }
                 else {
-                     //delete current profile image
-                     Storage::delete('public/profile_image/'.$user->profile_image);
+                    //delete the image if it is not default image
+                    if($user->profile_image != "no_image.png") {
+                        Storage::delete('public/profile_image/'.$user->profile_image);
+                     }
 
                     $user->profile_image = $request->input("profile_image");
                 }
