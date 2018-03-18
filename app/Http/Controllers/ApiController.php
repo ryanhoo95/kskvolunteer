@@ -730,7 +730,7 @@ class ApiController extends Controller
     }
 
      //get active participation
-     public function getActiveParticipations(Request $request) {
+    public function getActiveParticipations(Request $request) {
         $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
         if($user) {
@@ -789,6 +789,91 @@ class ApiController extends Controller
                         $participation->participation_status = "Available";
                     }
 
+                }
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $participations
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //get active participation 2
+    public function getActiveParticipations2(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $today = Carbon::today()->format('Y-m-d');
+            $current_time = Carbon::now()->format('H:i:s');
+
+            $participations = Participation::where('participant_id', $user->user_id)->where('status', 'J')->get(['participation_id', 'activity_id', 'invitation_code']);
+
+            if($participations) {
+                foreach($participations as $participation) {
+                    $activity = Activity::where('activity_id', $participation->activity_id)->where('status', 'A')->get(['activity_title', 'activity_date', 'start_time', 'end_time', 'slot', 'description', 'remark'])->first();
+
+                    if($activity) {
+                        $participation->display = "flex";
+                        $participation->action = "Withdraw";
+
+                        //check whetehr activity already started
+                        if($activity->activity_date == $today && $activity->start_time < $current_time) {
+                            $participation->action = "None";
+                        }
+                        else {
+                            $participation->action = "Withdraw";
+                        }
+
+                        //format description and remark
+                        if($activity->description == null) {
+                            $participation->description = "-";
+                        }
+                        else {
+                            $participation->description = $activity->description;
+                        }
+
+                        if($activity->remark == null) {
+                            $participation->remark = "-";
+                        }
+                        else {
+                            $participation->remark = $activity->remark;
+                        }
+
+                        $participation->activity_title = $activity->activity_title;
+                        $participation->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
+                        $participation->start_time = Carbon::parse($activity->start_time)->format('h:i A');
+                        $participation->end_time = Carbon::parse($activity->end_time)->format('h:i A');
+                        $participation->slot = $activity->slot;
+
+                        //get participation num
+                        $participation_num = Participation::where('activity_id', $participation->activity_id)->where(function ($q) {
+                            $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                        })->count();
+
+                        $participation->participation_num = $participation_num;
+
+                        if($participation_num == $activity->slot) {
+                            $participation->participation_status = "Full";
+                        }
+                        else {
+                            $participation->participation_status = "Available";
+                        }
+
+
+                    }
+                    else {
+                        //no need to display inactive activity
+                        $participation->display = "none";
+                    }
                 }
             }
 
@@ -962,80 +1047,208 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
-    //get active participation
-    public function getActiveParticipations2(Request $request) {
+    //get pending invitations
+    public function getPendingInvitations(Request $request) {
         $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
         if($user) {
-            $today = Carbon::today()->format('Y-m-d');
-            $current_time = Carbon::now()->format('H:i:s');
+            $invitations = DB::table('invitation')
+                            ->join('activity', 'invitation.activity_id', '=', 'activity.activity_id')
+                            ->join('user', 'invitation.invited_by', '=', 'user.user_id')
+                            ->where('invitation.status', 'P')
+                            ->where('invitation.target_to', $user->user_id)
+                            ->where('activity.status', 'A')
+                            ->select('invitation.invitation_id', 'invitation.activity_id', 'invitation.invited_by',
+                            'invitation.invitation_code', 'activity.activity_title', 'activity.activity_date', 
+                            'activity.start_time', 'activity.end_time', 'activity.slot', 'activity.description', 
+                            'activity.remark', 'user.full_name', 'user.profile_name', 'user.profile_image')
+                            ->get();
 
-            $participations = Participation::where('participant_id', $user->user_id)->where('status', 'J')->get(['participation_id', 'activity_id', 'invitation_code']);
+            foreach($invitations as $invitation) {
+                //format date time and text
+                $invitation->activity_date = Carbon::parse($invitation->activity_date)->format('d M Y');
+                $invitation->start_time = Carbon::parse($invitation->start_time)->format('h:i A');
+                $invitation->end_time = Carbon::parse($invitation->end_time)->format('h:i A');
 
-            if($participations) {
-                foreach($participations as $participation) {
-                    $activity = Activity::where('activity_id', $participation->activity_id)->where('status', 'A')->get(['activity_title', 'activity_date', 'start_time', 'end_time', 'slot', 'description', 'remark'])->first();
+                if($invitation->description == null) {
+                    $invitation->description = '-';
+                }
 
-                    if($activity) {
-                        $participation->display = "flex";
-                        $participation->action = "Withdraw";
+                if($invitation->remark == null) {
+                    $invitation->remark = '-';
+                }
 
-                        //check whetehr activity already started
-                        if($activity->activity_date == $today && $activity->start_time < $current_time) {
-                            $participation->action = "None";
-                        }
-                        else {
-                            $participation->action = "Withdraw";
-                        }
+                //format profile image
+                $invitation->profile_image = AppHelper::getProfileStorageUrl().$invitation->profile_image;
 
-                        //format description and remark
-                        if($activity->description == null) {
-                            $participation->description = "-";
-                        }
-                        else {
-                            $participation->description = $activity->description;
-                        }
+                //get participation num
+                $participation_num = Participation::where('activity_id', $invitation->activity_id)->where(function ($q) {
+                    $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                })->count();
 
-                        if($activity->remark == null) {
-                            $participation->remark = "-";
-                        }
-                        else {
-                            $participation->remark = $activity->remark;
-                        }
+                $invitation->participation_num = $participation_num;
 
-                        $participation->activity_title = $activity->activity_title;
-                        $participation->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
-                        $participation->start_time = Carbon::parse($activity->start_time)->format('h:i A');
-                        $participation->end_time = Carbon::parse($activity->end_time)->format('h:i A');
-                        $participation->slot = $activity->slot;
-
-                        //get participation num
-                        $participation_num = Participation::where('activity_id', $participation->activity_id)->where(function ($q) {
-                            $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
-                        })->count();
-
-                        $participation->participation_num = $participation_num;
-
-                        if($participation_num == $activity->slot) {
-                            $participation->participation_status = "Full";
-                        }
-                        else {
-                            $participation->participation_status = "Available";
-                        }
-
-
-                    }
-                    else {
-                        //no need to display inactive activity
-                        $participation->display = "none";
-                    }
+                if($participation_num == $invitation->slot) {
+                    $invitation->participation_status = "Full";
+                }
+                else {
+                    $invitation->participation_status = "Available";
                 }
             }
 
             $data = [
                 'status' => 'success',
-                'data' => $participations
+                'data' => $invitations
             ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //reject invitation
+    public function rejectInvitation(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $invitation = Invitation::where('invitation_id', $request->input('invitation_id'))->get()->first();
+
+            if($invitation) {
+                $invitation->status = 'R';
+                $invitation->save();
+
+                $data = [
+                    'status' => 'success',
+                    'message' => 'The invitation is rejected.'
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Unable to reject the invitation. Please try again later.'
+                ];
+            }
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //accept invitation
+    public function acceptInvitation(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        $date = Carbon::parse($request->input('date'))->format('Y-m-d');
+        $start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
+        $end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+
+        if($user) {
+            $invitation = Invitation::where('invitation_id', $request->input('invitation_id'))->get()->first();
+
+            if($invitation) {
+                //used to check for clashing
+                $activities = Activity::where('activity_date', $date)->where(function ($p) use ($start_time, $end_time) {
+                    $p->where(function ($query) use ($start_time, $end_time) {
+                        $query->where('start_time', '>=', $start_time)->where('start_time', '<', $end_time);
+                    })
+                    ->orWhere(function ($query) use ($start_time, $end_time) {
+                        $query->where('end_time', '>=', $start_time)->where('end_time', '<', $end_time);
+                    })
+                    ->orWhere(function ($query) use ($start_time, $end_time) {
+                        $query->where('start_time', $start_time)->where('end_time', $end_time);
+                    });
+                })->get(['activity_id']);
+
+
+                $clash = false;
+
+                foreach($activities as $activityClash) {
+                    //get the participation
+                    $participationClash = Participation::where('activity_id', $activityClash->activity_id)->where('participant_id', $user->user_id)->where('status', 'J')->get()->first();
+    
+                    if($participationClash) {
+                        $clash = true;
+                        break;
+                    }
+                }
+    
+                if($clash) {
+                    $data = [
+                        'status' => 'fail',
+                        'message' => 'You have another participation which clash with this invitation.',
+                    ];
+                }
+                else {
+                    $activity = Activity::where('activity_id', $request->input('activity_id'))->where('status', 'A')->get()->first();
+    
+                    if($activity) {
+                        //get participation num
+                        $participation_num = Participation::where('activity_id', $request->input('activity_id'))->where(function ($q) {
+                            $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                        })->count();
+        
+                        //slot is full
+                        if($participation_num == $activity->slot) {
+                            $data = [
+                                'status' => 'fail',
+                                'message' => 'The slot for this activity is already full.'
+                            ];
+                        }
+                        else { //the activity is available
+                            //check whether got participation of this activity
+                            $hasParticipation = Participation::where('activity_id', $request->input('activity_id'))
+                                                ->where('participant_id', $user->user_id)->get()->first();
+
+                            if($hasParticipation) {
+                                $hasParticipation->status = 'J';
+                                $hasParticipation->invitation_code = $request->input('invitation_code');
+                                $hasParticipation->save();
+                            }
+                            else {
+                                //create a new participation
+                                $participation = new Participation;
+                                $participation->participant_id = $user->user_id;
+                                $participation->activity_id = $request->input('activity_id');
+                                $participation->status = "J";
+                                $participation->invitation_code = $request->input('invitation_code');
+                                $participation->updated_by = $user->user_id;
+                                $participation->save();
+                            }
+                            
+                            $invitation->status = 'A';
+                            $invitation->save();
+
+                            $data = [
+                                'status' => 'success',
+                                'message' => 'The invitation is accepted.'
+                            ];
+                            
+                        }
+                    }
+                    else {
+                        $data = [
+                            'status' => 'fail',
+                            'message' => 'Unable to accept the invitation. Please try again later.'
+                        ];
+                    }
+                }
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Unable to accept the invitation. Please try again later.'
+                ];
+            }
         }
         else {
             $data = [

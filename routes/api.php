@@ -77,3 +77,12 @@ Route::post('/getVolunteersForInvite', ['as' => 'api.getVolunteersForInvite', 'u
 
 // send invitation
 Route::post('/sendInvitation', ['as' => 'api.sendInvitation', 'uses' => 'ApiController@sendinvitation']);
+
+// get pending invitations
+Route::post('/getPendingInvitations', ['as' => 'api.getPendingInvitations', 'uses' => 'ApiController@getPendingInvitations']);
+
+// reject invitation
+Route::post('/rejectInvitation', ['as' => 'api.rejectInvitation', 'uses' => 'ApiController@rejectInvitation']);
+
+// accept invitation
+Route::post('/acceptInvitation', ['as' => 'api.acceptInvitation', 'uses' => 'ApiController@acceptInvitation']);
