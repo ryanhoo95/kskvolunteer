@@ -311,7 +311,7 @@ class ApiController extends Controller
 
     //update volunteer profile
     public function updateVolunteerProfile(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'profile_image'])->first();
 
         if($user) {
             $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)->get()->first();
@@ -657,7 +657,7 @@ class ApiController extends Controller
             
                             if($participation) {
                                 $participation->status = "J";
-                                $participant->invitation = $user->user_id."INV_".time();
+                                $participation->invitation_code = $user->user_id."INV_".time();
                                 $participation->save();
             
                                 $data = [
