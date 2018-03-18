@@ -845,8 +845,8 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
-     //get volunteers for invite
-     public function getVolunteersForInvite(Request $request) {
+    //get volunteers for invite
+    public function getVolunteersForInvite(Request $request) {
         $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
         if($user) {
@@ -875,6 +875,7 @@ class ApiController extends Controller
                     //check whether this volunteer is invited by the same group, and is pending
                     $invitation = Invitation::where('activity_id', $request->input('activity_id'))
                                 ->where('status', 'P')
+                                ->where('target_to', $volunteer->user_id)
                                 ->where('invitation_code', $request->input('invitation_code'))
                                 ->get()->first();
 
@@ -892,6 +893,64 @@ class ApiController extends Controller
                 'status' => 'success',
                 'data' => $volunteers
             ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //send invitation
+    public function sendInvitation(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            //check whether this volunteer already join the activity
+            $participation = Participation::where('activity_id', $request->input('activity_id'))
+            ->where('participant_id', $request->input('target_to'))
+            ->where('status', 'J')
+            ->get()->first();
+
+            if($participation) {
+                $data = [
+                    'status' => 'fail',
+                    'message' => $request->input('full_name')." had joined this activity."
+                ];
+            }
+            else {
+                //check whether this volunteer is invited by the same group, and is pending
+                $invitation = Invitation::where('activity_id', $request->input('activity_id'))
+                            ->where('status', 'P')
+                            ->where('target_to', $request->input('target_to'))
+                            ->where('invitation_code', $request->input('invitation_code'))
+                            ->get()->first();
+
+                if($invitation) {
+                    $data = [
+                        'status' => 'fail',
+                        'message' => $request->input('full_name').' had been invited.'
+                    ];
+                }
+                else {
+                    //send invitation
+                    $sendInvitation = new Invitation;
+                    $sendInvitation->activity_id = $request->input('activity_id');
+                    $sendInvitation->invited_by = $user->user_id;
+                    $sendInvitation->target_to = $request->input('target_to');
+                    $sendInvitation->invitation_code = $request->input('invitation_code');
+                    $sendInvitation->status = 'P';
+                    $sendInvitation->save();
+
+                    $data = [
+                        'status' => 'success',
+                        'message' => 'Invitation sent to '.$request->input('full_name').'.'
+                    ];
+                }
+            }
         }
         else {
             $data = [

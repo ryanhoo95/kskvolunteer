@@ -74,3 +74,6 @@ Route::post('/getInvitedParticipants', ['as' => 'api.getInvitedParticipants', 'u
 
 // get volunteers for invite
 Route::post('/getVolunteersForInvite', ['as' => 'api.getVolunteersForInvite', 'uses' => 'ApiController@getVolunteersForInvite']);
+
+// send invitation
+Route::post('/sendInvitation', ['as' => 'api.sendInvitation', 'uses' => 'ApiController@sendinvitation']);
