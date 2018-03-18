@@ -617,7 +617,7 @@ class ApiController extends Controller
             if($clash) {
                 $data = [
                     'status' => 'fail',
-                    'message' => 'You have another participation which clash with the selected activity.',
+                    'message' => 'You have another participation which clash with this activity.',
                     'data' => $participationClash
                 ];
             }
@@ -670,7 +670,7 @@ class ApiController extends Controller
                             else {
                                 $data = [
                                     'status' => 'fail',
-                                    'message' => 'Unable to join the selected activity. Please try again later.'
+                                    'message' => 'Unable to join this activity. Please try again later.'
                                 ];
                             }
                         }
@@ -679,7 +679,7 @@ class ApiController extends Controller
                 else {
                     $data = [
                         'status' => 'fail',
-                        'message' => 'Unable to join the selected activity. Please try again later.'
+                        'message' => 'Unable to join this activity. Please try again later.'
                     ];
                 }
             }
