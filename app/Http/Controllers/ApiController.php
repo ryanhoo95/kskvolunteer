@@ -657,6 +657,7 @@ class ApiController extends Controller
             
                             if($participation) {
                                 $participation->status = "J";
+                                $participant->invitation = $user->user_id."INV_".time();
                                 $participation->save();
             
                                 $data = [
@@ -750,7 +751,8 @@ class ApiController extends Controller
                 foreach($participations as $participation) {
 
                     //check whetehr activity already started
-                    if($participation->activity_date == $today && $participation->start_time < $current_time) {
+                    if(($participation->activity_date == $today && $participation->start_time < $current_time) 
+                        || $participation->activity_date < $today) {
                         $participation->action = "None";
                     }
                     else {
@@ -769,6 +771,7 @@ class ApiController extends Controller
                     $participation->activity_date = Carbon::parse($participation->activity_date)->format('d M Y');
                     $participation->start_time = Carbon::parse($participation->start_time)->format('h:i A');
                     $participation->end_time = Carbon::parse($participation->end_time)->format('h:i A');
+                    $participation->response = "Join";
 
                     //get participation num
                     $participation_num = Participation::where('activity_id', $participation->activity_id)->where(function ($q) {
@@ -790,6 +793,102 @@ class ApiController extends Controller
             $data = [
                 'status' => 'success',
                 'data' => $participations
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //get invited participants, where they already accept the invitation
+    public function getInvitedParticipants(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            //get participants of the same invitation code
+            $participants = DB::table('participation')
+            ->join('user', 'participation.participant_id', '=', 'user.user_id')
+            ->where('participation.activity_id', $request->input('activity_id'))
+            ->where('participation.participant_id', '!=', $user->user_id)
+            ->where('participation.invitation_code', $request->input('invitation_code'))
+            ->where(function ($q) {
+                $q->where('participation.status', 'A')
+                  ->orWhere('participation.status', 'P')
+                  ->orWhere('participation.status', 'J');
+            })
+            ->select('user.user_id', 'user.full_name', 'user.profile_name', 'user.profile_image')
+            ->get();
+
+            foreach($participants as $participant) {
+                $participant->profile_image =  AppHelper::getProfileStorageUrl().$participant->profile_image;
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $participants
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+     //get volunteers for invite
+     public function getVolunteersForInvite(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $volunteers = User::where('status', 'A')
+                        ->where('usertype', '4')
+                        ->where('user_id', '!=', $user->user_id)
+                        ->where(function ($q) use ($request){
+                            $q->where('profile_name', 'like', '%'.$request->input('name').'%')
+                              ->orWhere('full_name', 'like', '%'.$request->input('name').'%');
+                        })
+                        ->get(['user_id', 'full_name', 'profile_name', 'profile_image']);
+
+            foreach($volunteers as $volunteer) {
+                $volunteer->profile_image = AppHelper::getProfileStorageUrl().$volunteer->profile_image;
+
+                //check whether this volunteer already join the activity
+                $participation = Participation::where('activity_id', $request->input('activity_id'))
+                                ->where('participant_id', $volunteer->user_id)
+                                ->where('status', 'J')
+                                ->get()->first();
+                
+                if($participation) {
+                    $volunteer->invite_status = "Joined";
+                }
+                else {
+                    //check whether this volunteer is invited by the same group, and is pending
+                    $invitation = Invitation::where('activity_id', $request->input('activity_id'))
+                                ->where('status', 'P')
+                                ->where('invitation_code', $request->input('invitation_code'))
+                                ->get()->first();
+
+                    if($invitation) {
+                        $volunteer->invite_status = "Invited";
+                    }
+                    else {
+                        $volunteer->invite_status = "None";
+                    }
+                }
+
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $volunteers
             ];
         }
         else {

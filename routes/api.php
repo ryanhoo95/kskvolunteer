@@ -68,3 +68,9 @@ Route::post('/withdrawActivity', ['as' => 'api.withdrawActivity', 'uses' => 'Api
 
 // get active participation
 Route::post('/getActiveParticipations', ['as' => 'api.getActiveParticipations', 'uses' => 'ApiController@getActiveParticipations']);
+
+// get invited participants
+Route::post('/getInvitedParticipants', ['as' => 'api.getInvitedParticipants', 'uses' => 'ApiController@getInvitedParticipants']);
+
+// get volunteers for invite
+Route::post('/getVolunteersForInvite', ['as' => 'api.getVolunteersForInvite', 'uses' => 'ApiController@getVolunteersForInvite']);
