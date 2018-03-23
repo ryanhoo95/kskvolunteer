@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ Route::get('/reset_password', 'ProfileController@resetPassword');
 Route::put('/reset_password/{id}', ['as' => 'profile.update_password', 'uses' => 'ProfileController@updatePassword']);
 
 Route::get('/test/{type}/{id}', ['as' => 'user.test', 'uses' => 'PagesController@test']);
+// Route::get('/api/users', ['as' => 'api.test', 'uses' => 'PagesController@api']);
 
 //user management
 Route::get('/user/{type}', ['as' => 'user.index', 'uses' => 'UserController@index']);
@@ -52,4 +54,7 @@ Route::get('/activity/{id}', ['as' => 'activity.show', 'uses' => 'ActivityContro
 Route::post('/activity', ['as' => 'activity.store', 'uses' => 'ActivityController@store']);
 Route::get('/activity/{id}/edit', ['as' => 'activity.edit', 'uses' => 'ActivityController@edit']);
 Route::put('/activity/{id}/{action}', ['as' => 'activity.update', 'uses' => 'ActivityController@update']);
+
+//participation
+Route::get('/participation/{id}', ['as => participation.showParticipation', 'uses' => 'ParticipationController@showParticipation']);
 
