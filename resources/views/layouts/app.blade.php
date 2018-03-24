@@ -99,6 +99,8 @@
         <!-- password strength meter -->
         <script src="{{asset("css/admin-lte/plugins/password-strength-meter/password.min.js")}}"></script>
 
+        @yield('js')
+
         <script type="text/javascript">
             $(function () {
                 var today = new Date();

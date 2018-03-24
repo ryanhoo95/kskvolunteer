@@ -56,5 +56,6 @@ Route::get('/activity/{id}/edit', ['as' => 'activity.edit', 'uses' => 'ActivityC
 Route::put('/activity/{id}/{action}', ['as' => 'activity.update', 'uses' => 'ActivityController@update']);
 
 //participation
-Route::get('/participation/{id}', ['as => participation.showParticipation', 'uses' => 'ParticipationController@showParticipation']);
+Route::get('/participation', ['as => participation.index', 'uses' => 'ParticipationController@index']);
+Route::get('/participation/{id}', ['as => participation.show', 'uses' => 'ParticipationController@show']);
 

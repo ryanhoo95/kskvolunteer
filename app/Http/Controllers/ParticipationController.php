@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Participation;
+use App\Activity;
+use App\User;
 use Carbon\Carbon;
 use Auth;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +12,88 @@ use Illuminate\Http\Request;
 
 class ParticipationController extends Controller
 {
-    //
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * 
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request) {
+        if($request->input('date')) {
+            //validation
+            $rules = [
+                'date' => 'required|date'
+            ];
+
+            $messages = [
+                'required' => 'Please fill out this field.',
+                'date' => 'Invalid date format.'
+            ];
+
+            $request->validate($rules, $messages);
+
+            $date = Carbon::parse($request->input('date'))->format('Y-m-d');
+
+            $activities = Activity::where('activity_date', $date)
+                        ->where('status', 'A')
+                        ->orderBy('start_time', 'asc')
+                        ->get(['activity_id', 'activity_title', 'start_time', 'end_time', 
+                        'duration', 'slot', 'description', 'remark', 'activity_date']);
+
+            foreach($activities as $activity) {
+                //format the time
+                $activity->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
+                $activity->start_time = Carbon::parse($activity->start_time)->format('h:i A');
+                $activity->end_time = Carbon::parse($activity->end_time)->format('h:i A');
+
+                //format description and remark
+                if($activity->description == null) {
+                    $activity->description = "-";
+                }
+
+                if($activity->remark == null) {
+                    $activity->remark = "-";
+                }
+
+
+                //get participation num
+                $participation_num = Participation::where('activity_id', $activity->activity_id)
+                                    ->where(function ($q) {
+                                        $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                                    })->count();
+
+                $activity->participation_num = $participation_num;
+
+                if($participation_num == $activity->slot) {
+                    $activity->participation_status = "Full";
+                }
+                else {
+                    $activity->participation_status = "Available";
+                }
+            }
+
+
+            $data = [
+                'activities' => $activities
+            ];
+        }
+        else {
+            $data = null;
+        }
+        
+
+        return view('participation.index')->with('data', $data);
+        //return $data;
+    }
 
     /**
      * Display the participants for the selected activity.
@@ -18,7 +101,7 @@ class ParticipationController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function showParticipation($id) {
+    public function show($id) {
         //handle individual
         $individual = array();
         $invitationCodesSolo = Participation::where('activity_id', $id)
@@ -116,6 +199,6 @@ class ParticipationController extends Controller
         ];
 
         //return $results;
-        return view('pages.test')->with('data', $results);;
+        return view('participation.show')->with('data', $results);;
     }
 }
