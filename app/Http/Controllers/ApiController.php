@@ -762,6 +762,7 @@ class ApiController extends Controller
                             if($participation) {
                                 $participation->status = "J";
                                 $participation->invitation_code = $user->user_id."INV_".time();
+                                $participation->updated_by = $user->user_id;
                                 $participation->save();
             
                                 $data = [
@@ -814,6 +815,7 @@ class ApiController extends Controller
                 else {
                     $participation->status = "W";
                     $participation->invitation_code = $user->user_id.'INV_'.time();
+                    $participation->updated_by = $user->user_id;
                     $participation->save();
 
                     $data = [
