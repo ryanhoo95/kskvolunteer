@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Participation;
 use App\Activity;
 use App\User;
+use App\VolunteerProfile;
 use Carbon\Carbon;
 use App\Helpers\AppHelper;
 use Auth;
@@ -254,25 +255,79 @@ class ParticipationController extends Controller
         return response()->json($data);
     }
 
-    //take attendance - present
-    public function present(Request $request) {
-        $participation = Participation::where('participation_id', $request->input('participation_id'))
-                        ->get()->first();
+    /**
+     * take attendance - present
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param int $activity_id
+     * @param  int  $participation_id
+     * @return \Illuminate\Http\Response
+     */
+    public function present(Request $request, $activity_id, $participation_id) {
+        $participation = Participation::where('participation_id', $participation_id)
+                        ->get(['status', 'participant_id', 'participation_id', 'updated_by'])->first();
 
-        if($participation) {
-            $participation->status = 'A';
-            $participation->save();
+        
+        $participation->status = 'P';
+        $participation->updated_by = Auth::user()->user_id;
+        $participation->save();
+        
+        $activity = Activity::where('activity_id', $activity_id)
+                    ->get(['duration'])->first();
+        
+        $volunteerProfile = VolunteerProfile::where('user_id', $participation->participant_id)
+                            ->get(['volunteer_profile_id', 'total_volunteer_duration'])->first();
 
-            $data = [
-                'status' => 'success'
-            ];
+        $volunteerProfile->total_volunteer_duration = $activity->duration + $volunteerProfile->total_volunteer_duration;
+        $volunteerProfile->save();
+
+        return redirect('/participation/'.$activity_id)->with('success', 'Attendance recorded.');
+    }
+
+     /**
+     * take attendance - absent
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param int $activity_id
+     * @param  int  $participation_id
+     * @return \Illuminate\Http\Response
+     */
+    public function absent(Request $request, $activity_id, $participation_id) {
+        $participation = Participation::where('participation_id', $participation_id)
+                        ->get(['status', 'participant_id', 'participation_id', 'updated_by'])->first();
+
+        
+        $participation->status = 'A';
+        $participation->updated_by = Auth::user()->user_id;
+        $participation->save();
+
+        $volunteerProfile = VolunteerProfile::where('user_id', $participation->participant_id)
+                            ->get(['volunteer_profile_id', 'blacklisted_number'])->first();
+
+        $volunteerProfile->blacklisted_number++;
+        $volunteerProfile->save();
+
+        //deactivate the user if he absent for 3 times
+        if($volunteerProfile->blacklisted_number == 3) {
+            $user = User::where('user_id', $participation->participant_id)
+                    ->get(['user_id', 'status', 'api_token'])->first();
+            
+            $user->status = 'I';
+            $user->api_token = null;
+            $user->save();
+
+            //withdraw the user from his active participation
+            $activeParticipations = Participation::where('participant_id', $user->user_id)
+                                    ->where('status', 'J')
+                                    ->get(['participation_id', 'status', 'updated_by']);
+
+            foreach($activeParticipations as $activeParticipation) {
+                $activeParticipation->status = 'W';
+                $activeParticipation->updated_by = Auth::user()->user_id;
+                $activeParticipation->save();
+            }
         }
-        else {
-            $data = [
-                'status' => 'fail'
-            ];
-        }
 
-        return response()->json($data);
+        return redirect('/participation/'.$activity_id)->with('success', 'Attendance recorded.');
     }
 }

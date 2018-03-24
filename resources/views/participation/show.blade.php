@@ -105,8 +105,20 @@
                                                         <td style="width: 25%">{{ $individual->ic_passport }}</td>
                                                         <td style="width: 40%">
                                                             @if ($individual->status == "J")
-                                                                <a href="/participation/{{$data['activity']->activity_id}}/createVIP" class="btn btn-danger"><i class="fa fa-thumbs-down"></i><span> Absent</span></a>
-                                                                <a href="/participation/{{$data['activity']->activity_id}}/createVIP" class="btn btn-success"><i class="fa fa-thumbs-up"></i><span> Present</span></a>
+                                                                
+                                                                {!! Form::open(['action' => ['ParticipationController@absent', $data['activity']->activity_id, $individual->participation_id], 'onsubmit' => 'return confirmMsg("absent", "'.$individual->full_name.'");', 'method' => 'POST']) !!}
+
+                                                                    {{Form::hidden('_method', 'PUT')}}
+                                                                    {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['type' => 'submit', 'class' => 'btn btn-danger pull-left', 'style' => 'margin-right:5px'] )  }}
+                        
+                                                                {!! Form::close() !!}
+                                                                
+                                                                {!! Form::open(['action' => ['ParticipationController@present', $data['activity']->activity_id, $individual->participation_id], 'onsubmit' => 'return confirmMsg("present", "'.$individual->full_name.'");', 'method' => 'POST']) !!}
+
+                                                                    {{Form::hidden('_method', 'PUT')}}
+                                                                    {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['type' => 'submit', 'class' => 'btn btn-success pull-left'] )  }}
+                        
+                                                                {!! Form::close() !!}
     
                                                             @elseif($individual->status == "A")
                                                                 <span class="text-danger"><i class="fa fa-thumbs-down"></i><span> Absent</span>
@@ -166,8 +178,20 @@
                                                     <td style="width: 25%">{{ $member->ic_passport }}</td>
                                                     <td style="width: 40%">
                                                         @if ($member->status == "J")
-                                                            <a href="/participation/{{$data['activity']->activity_id}}/createVIP" class="btn btn-danger"><i class="fa fa-thumbs-down"></i><span> Absent</span></a>
-                                                            <a href="/participation/{{$data['activity']->activity_id}}/createVIP" class="btn btn-success"><i class="fa fa-thumbs-up"></i><span> Present</span></a>
+                                                            
+                                                            {!! Form::open(['action' => ['ParticipationController@absent', $data['activity']->activity_id, $member->participation_id], 'onsubmit' => 'return confirmMsg("absent", "'.$member->full_name.'");', 'method' => 'POST']) !!}
+
+                                                                {{Form::hidden('_method', 'PUT')}}
+                                                                {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['type' => 'submit', 'class' => 'btn btn-danger pull-left', 'style' => 'margin-right:5px'] )  }}
+                    
+                                                            {!! Form::close() !!}
+                                                    
+                                                            {!! Form::open(['action' => ['ParticipationController@present', $data['activity']->activity_id, $member->participation_id], 'onsubmit' => 'return confirmMsg("present", "'.$member->full_name.'");', 'method' => 'POST']) !!}
+
+                                                                {{Form::hidden('_method', 'PUT')}}
+                                                                {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['type' => 'submit', 'class' => 'btn btn-success pull-left'] )  }}
+                    
+                                                            {!! Form::close() !!}
 
                                                         @elseif($member->status == "A")
                                                             <span class="text-danger"><i class="fa fa-thumbs-down"></i><span> Absent</span>
@@ -298,32 +322,16 @@
 
 @section('js')
     <script type="text/javascript">
-        function confirmMsg(type) {
+        function confirmMsg(type, name) {
             var msg;
-            var user = document.getElementById("full_name").innerHTML;
-            if(type == "reset_password") {
-                msg = "Are you sure to reset password of " + user + "?";
+            
+            if(type == "absent") {
+                msg = "Are you sure to record the attendance of " + name + " as ABSENT?";
             }
-            else if(type == "deactivate") {
-                msg = "Are you sure to deactivate " + user + " ?";
-            }
-            else if(type == "activate") {
-                msg = "Are you sure to activate " + user + " ?";
-            }
-            else if(type == "activate") {
-                msg = "Are you sure to activate " + user + " ?";
-            }
-            else if(type == "promote_to_staff") {
-                msg = "Are you sure to promote " + user + " as Staff?";
-            }
-            else if(type == "promote_to_admin") {
-                msg = "Are you sure to promote " + user + " as Admin?";
-            }
-            else if(type == "demote_to_staff") {
-                msg = "Are you sure to demote " + user + " as Staff?";
+            else if(type == "present") {
+                msg = "Are you sure to record the attendance of " + name + " as PRESENT?";
             }
             
-
             return confirm(msg);
         }
 

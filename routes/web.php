@@ -59,5 +59,6 @@ Route::put('/activity/{id}/{action}', ['as' => 'activity.update', 'uses' => 'Act
 Route::get('/participation', ['as => participation.index', 'uses' => 'ParticipationController@index']);
 Route::get('/participation/{id}', ['as => participation.show', 'uses' => 'ParticipationController@show']);
 Route::get('/participation/participant/{id}', ['as => participation.getParticipant', 'uses' => 'ParticipationController@getParticipant']);
-Route::post('/participation/participant/present', ['as => participation.present', 'uses' => 'ParticipationController@present']);
+Route::put('/participation/{activity_id}/participant/{participation_id}/present', ['as => participation.present', 'uses' => 'ParticipationController@present']);
+Route::put('/participation/{activity_id}/participant/{participation_id}/absent', ['as => participation.absent', 'uses' => 'ParticipationController@absent']);
 
