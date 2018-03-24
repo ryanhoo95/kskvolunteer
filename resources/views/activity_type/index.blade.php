@@ -55,7 +55,7 @@
                             </div>
 
                             <!-- box body -->
-                            <div class="box-body">
+                            <div class="box-body table-responsive">
                                 @if (count($data['activity_types']) == 0)
                                     <p class="text-danger">No template at the moment.</p>
                                 @else

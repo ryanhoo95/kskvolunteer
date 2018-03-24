@@ -63,7 +63,7 @@
                         </div>
 
                         <!-- box body -->
-                        <div class="box-body">
+                        <div class="box-body table-responsive">
                             @if (count($data['users']) == 0)
                                 <p class="text-danger">No user at the moment.</p>
                             @else

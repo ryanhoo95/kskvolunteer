@@ -51,7 +51,7 @@
                         </div>
 
                         <!-- box body -->
-                        <div class="box-body">
+                        <div class="box-body table-responsive">
                             @if (count($data['activities']) == 0)
                                 <p class="text-danger">No activity at the moment.</p>
                             @else
