@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\User;
 use App\UserType;
 use App\VolunteerProfile;
+use App\Participation;
 use Carbon\Carbon;
+use App\Helpers\AppHelper;
 use Auth;
 
 class UserController extends Controller
@@ -168,6 +170,13 @@ class UserController extends Controller
             $user->status = "A";
             $user->save();
 
+            if(AppHelper::getUserRole($user->usertype) == "Volunteer") {
+                $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)
+                                    ->get(['volunteer_profile_id', 'blacklisted_number'])->first();
+                $volunteerProfile->blacklisted_number = 0;
+                $volunteerProfile->save();
+            }
+
             return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been activated.');
         }
         else if($action == "deactivate") {
@@ -176,6 +185,19 @@ class UserController extends Controller
             $user->api_token = null;
             $user->save();
 
+            //withdraw the user from his active participation if the user is volunteer
+            if(AppHelper::getUserRole($user->usertype) == "Volunteer") {
+                $activeParticipations = Participation::where('participant_id', $user->user_id)
+                                    ->where('status', 'J')
+                                    ->get(['participation_id', 'status', 'updated_by']);
+
+                foreach($activeParticipations as $activeParticipation) {
+                    $activeParticipation->status = 'W';
+                    $activeParticipation->updated_by = Auth::user()->user_id;
+                    $activeParticipation->save();
+                }
+            }
+            
             return redirect('/user/'.$type.'/'.$id.'/profile')->with('success', 'User has been deactivated.');
         }
         else if($action == "promote_to_staff") {
