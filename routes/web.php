@@ -64,3 +64,6 @@ Route::get('/participation/participant/{id}', ['as => participation.getParticipa
 Route::put('/participation/{activity_id}/participant/{participation_id}/present', ['as => participation.present', 'uses' => 'ParticipationController@present']);
 Route::put('/participation/{activity_id}/participant/{participation_id}/absent', ['as => participation.absent', 'uses' => 'ParticipationController@absent']);
 
+//report
+Route::get('/report', ['as => pages.report', 'uses' => 'PagesController@report']);
+

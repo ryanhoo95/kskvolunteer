@@ -76,6 +76,8 @@
         <script src="{{asset("css/admin-lte/bower_components/jquery/dist/jquery.min.js")}}"></script>
         <!-- Bootstrap 3.3.7 -->
         <script src="{{asset("css/admin-lte/bower_components/bootstrap/dist/js/bootstrap.min.js")}}"></script>
+        <!-- ChartJS -->
+        <script src="{{asset("css/admin-lte/bower_components/Chart.js/Chart.js")}}"></script>
         <!-- DataTables -->
         <script src="{{asset("css/admin-lte/bower_components/datatables.net/js/jquery.dataTables.min.js")}}"></script>
         <script src="{{asset("css/admin-lte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js")}}"></script>
@@ -98,6 +100,15 @@
         <script src="{{asset("css/admin-lte/plugins/iCheck/icheck.min.js")}}"></script>
         <!-- password strength meter -->
         <script src="{{asset("css/admin-lte/plugins/password-strength-meter/password.min.js")}}"></script>
+        <!-- FLOT CHARTS -->
+        <script src="{{asset("css/admin-lte/bower_components/Flot/jquery.flot.js")}}"></script>
+        <!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+        <script src="{{asset("css/admin-lte/bower_components/Flot/jquery.flot.resize.js")}}"></script>
+        <!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+        <script src="{{asset("css/admin-lte/bower_components/Flot/jquery.flot.pie.js")}}"></script>
+        <!-- FLOT CATEGORIES PLUGIN - Used to draw bar charts -->
+        <script src="{{asset("css/admin-lte/bower_components/Flot/jquery.flot.categories.js")}}"></script>
+        <!-- Page script -->
 
         @yield('js')
 
