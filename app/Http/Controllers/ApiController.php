@@ -1372,4 +1372,87 @@ class ApiController extends Controller
 
         return response()->json($data);
     }
+
+    //get history
+    public function getHistory(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $today = Carbon::today()->format('Y-m-d');
+            $current_time = Carbon::now()->format('H:i:s');
+
+            $participations = DB::table('participation')
+                            ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+                            ->where(function ($q) {
+                                $q->where('participation.status', 'P')->orWhere('participation.status', 'A');
+                            })
+                            ->where('participation.participant_id', $user->user_id)
+                            ->where('activity.status', 'A')
+                            ->select('participation.participation_id', 'participation.activity_id', 'participation.invitation_code',
+                            'activity.activity_title', 'activity.start_time', 'activity.end_time', 'activity.slot', 'activity.description',
+                            'activity.remark', 'activity.activity_date', 'participation.status')
+                            ->orderBy('activity.activity_date', 'desc')
+                            ->orderBy('activity.start_time', 'asc')
+                            ->get();
+
+            if($participations) {
+                foreach($participations as $participation) {
+
+                    //format description and remark
+                    if($participation->description == null) {
+                        $participation->description = "-";
+                    }
+
+                    if($participation->remark == null) {
+                        $participation->remark = "-";
+                    }
+
+                    $participation->activity_date = Carbon::parse($participation->activity_date)->format('d M Y');
+                    $participation->start_time = Carbon::parse($participation->start_time)->format('h:i A');
+                    $participation->end_time = Carbon::parse($participation->end_time)->format('h:i A');
+
+                    $participation->response = AppHelper::getParticipationResponse($participation->status);
+                    $participation->action = AppHelper::getParticipationAction($participation->response);
+
+                    //get participation num
+                    $participation_num = Participation::where('activity_id', $participation->activity_id)->where(function ($q) {
+                        $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                    })->count();
+
+                    $participation->participation_num = $participation_num;
+
+                    if($participation_num == $participation->slot) {
+                        $participation->participation_status = "Full";
+                    }
+                    else {
+                        $participation->participation_status = "Available";
+                    }
+
+                }
+            }
+
+            //get total volunteering hour
+            $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)
+                                ->get(['total_volunteer_duration'])->first();
+
+            $results = [
+                'totalHours' => $volunteerProfile->total_volunteer_duration,
+                'histories' => $participations
+            ];
+
+            $data = [
+                'status' => 'success',
+                'data' => $results,
+                
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
 }

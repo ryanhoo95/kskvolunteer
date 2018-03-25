@@ -86,3 +86,6 @@ Route::post('/rejectInvitation', ['as' => 'api.rejectInvitation', 'uses' => 'Api
 
 // accept invitation
 Route::post('/acceptInvitation', ['as' => 'api.acceptInvitation', 'uses' => 'ApiController@acceptInvitation']);
+
+// get history
+Route::post('/getHistory', ['as' => 'api.getHistory', 'uses' => 'ApiController@getHistory']);
