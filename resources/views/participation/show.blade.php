@@ -53,16 +53,49 @@
                                 <div class="box-header text-center">
                                     <h3 class="box-title pull-left"> <b>VIP</b></h3>
                                     @if (Carbon::today() <= Carbon::parse($data['activity']->activity_date))
-                                        <a href="/participation/{{$data['activity']->activity_id}}/createVIP" class="btn btn-success pull-right"><i class="fa fa-plus"></i><span> Add VIP</span></a>
+                                        <a href="/participation/{{$data['activity']->activity_id}}/vip/create" class="btn btn-success pull-right"><i class="fa fa-plus"></i><span> Add VIP</span></a>
                                     @endif
                                 </div>
         
                                 <!-- body -->
-                                <div class="box-body">
+                                <div class="box-body table-responsive">
                                     @if (count($data['vips']) == 0)
                                         <p class="text-danger">There is no VIP for this activity.</p>
                                     @else
-                                        
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <th>Name</th>
+                                                <th>Remark</th>
+                                                <th>Action</th>
+                                            </thead>
+
+                                            <tbody>
+                                                @foreach ($data['vips'] as $vip)
+                                                    <tr>
+                                                        <td style="width: 25%">{{ $vip->participant_name }}</td>
+                                                        <td style="width: 40%">{{ $vip->participant_remark }}</td>
+                                                        @if (Carbon::today() <= Carbon::parse($data['activity']->activity_date))
+                                                            <td style="width: 35%">
+                                                                {!! Form::open(['action' => ['ParticipationController@cancelVIP', $data['activity']->activity_id, $vip->participation_id], 'onsubmit' => 'return confirmMsg("cancel", "'.$vip->participant_name.'");', 'method' => 'POST']) !!}
+
+                                                                    {{Form::hidden('_method', 'PUT')}}
+                                                                
+                                                                    {{ Form::button('<i class="fa fa-trash"></i><span> Cancel</span>', ['type' => 'submit', 'class' => 'btn btn-danger pull-left', 'style' => 'margin-right:5px'] )  }}
+                    
+                                                                {!! Form::close() !!}
+
+                                                                <a href="/participation/{{ $data['activity']->activity_id }}/vip/{{ $vip->participation_id }}/edit" class="btn btn-primary"><i class="fa fa-edit"></i><span> Edit</span></a>
+                                                            </td>
+                                                        @else
+                                                            <td style="width: 35%">None</td>
+                                                        @endif
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        @foreach ($data['vips'] as $vip)
+                                            
+                                        @endforeach
                                     @endif
                                 </div>
                             </div>
@@ -157,7 +190,7 @@
                         </div>
 
                         <!-- body -->
-                        <div class="box-body">
+                        <div class="box-body table-responsive">
                             @if (count($data['groups']) == 0)
                                 <p class="text-danger">There is no group participation for this activity.</p>
                             @else
@@ -348,6 +381,9 @@
             }
             else if(type == "present") {
                 msg = "Are you sure to record the attendance of " + name + " as PRESENT?";
+            }
+            else if(type == "cancel") {
+                msg = "Are you sure to cancel the participation of " + name + "?";
             }
             
             return confirm(msg);

@@ -107,9 +107,7 @@ class ParticipationController extends Controller
         //get the activity
         $activity = Activity::where('activity_id', $id)
                     ->where('status', 'A')
-                    ->get(['activity_id', 'activity_title', 'start_time', 'end_time', 
-                    'duration', 'slot', 'description', 'remark', 'activity_date'])
-                    ->first();
+                    ->firstOrFail();
 
         if($activity) {
             //format the time
@@ -166,7 +164,14 @@ class ParticipationController extends Controller
             $vips = Participation::whereNull('invitation_code')
                     ->whereNotNull('participant_name')
                     ->where('status', 'V')
-                    ->get(['participant_name', 'participant_remark']);
+                    ->where('activity_id', $id)
+                    ->get(['participation_id', 'participant_name', 'participant_remark']);
+
+            foreach($vips as $vip) {
+                if($vip->participant_remark == null) {
+                    $vip->participant_remark = '-';
+                }
+            }
 
             //handle group
             $groups = array();
@@ -329,5 +334,138 @@ class ParticipationController extends Controller
         }
 
         return redirect('/participation/'.$activity_id)->with('success', 'Attendance recorded.');
+    }
+
+    /**
+     * Show the form for creating a new VIP.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function createVIP($id)
+    {
+        $activity = Activity::where('activity_id', $id)
+                    ->where('status', 'A')
+                    ->firstOrFail();
+
+        $activity->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
+
+        $data = [
+            'activity' => $activity
+        ];
+
+        return view('participation.create')->with('data', $data);
+    }
+
+    /**
+     * Store a newly created VIP in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function storeVIP(Request $request, $id) {
+        //validation
+        $rules = [
+            'name' => 'required',
+            'remark' => 'nullable'
+        ];
+
+        $messages = [
+            'required' => 'Please fill out this field.'
+        ];
+
+        $request->validate($rules, $messages);
+
+        //create participation
+        $participation = new Participation;
+        $participation->activity_id = $id;
+        $participation->status = 'V';
+        $participation->participant_name = $request->input('name');
+        $participation->participant_remark = $request->input('remark');
+        $participation->participant_added_by = Auth::user()->user_id;
+        $participation->updated_by = Auth::user()->user_id;
+        $participation->save();
+
+        return redirect('/participation/'.$id)->with('success', 'VIP is added.');
+        
+    }
+
+    /**
+     * Show the form for editing the vip.
+     *
+     * @param  int  $activity_id
+     * @param  int  $participantion_id
+     * @return \Illuminate\Http\Response
+     */
+    public function editVIP($activity_id, $participation_id)
+    {
+        $activity = Activity::where('activity_id', $activity_id)
+                    ->where('status', 'A')
+                    ->firstOrFail();
+
+        $activity->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
+
+        $participation = Participation::where('participation_id', $participation_id)
+                        ->firstOrFail();
+
+        $data = [
+            'activity' => $activity,
+            'participation' => $participation
+        ];
+
+        return view('participation.edit')->with('data', $data);
+    }
+
+    /**
+     * Update the vip.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $activity_id
+     * @param  int  $participantion_id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateVIP(Request $request, $activity_id, $participation_id) {
+        //validation
+        $rules = [
+            'name' => 'required',
+            'remark' => 'nullable'
+        ];
+
+        $messages = [
+            'required' => 'Please fill out this field.'
+        ];
+
+        $request->validate($rules, $messages);
+
+        //create participation
+        $participation = Participation::findOrFail($participation_id);
+        $participation->participant_name = $request->input('name');
+        $participation->participant_remark = $request->input('remark');
+        $participation->updated_by = Auth::user()->user_id;
+        $participation->save();
+
+        return redirect('/participation/'.$activity_id)->with('success', 'VIP is updated.');
+    }
+
+    /**
+     * Cancel the vip.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $activity_id
+     * @param  int  $participantion_id
+     * @return \Illuminate\Http\Response
+     */
+    public function cancelVIP(Request $request, $activity_id, $participation_id) {
+        $participation = Participation::where('participation_id', $participation_id)
+                        ->get(['participation_id', 'status', 'updated_by'])->first();
+
+        if($participation) {
+            $participation->status = 'C';
+            $participation->updated_by = Auth::user()->user_id;
+            $participation->save();
+        }
+
+        return redirect('/participation/'.$activity_id)->with('success', 'Participation of the selected VIP is cancelled.');
     }
 }

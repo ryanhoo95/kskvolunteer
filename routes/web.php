@@ -58,6 +58,11 @@ Route::put('/activity/{id}/{action}', ['as' => 'activity.update', 'uses' => 'Act
 //participation
 Route::get('/participation', ['as => participation.index', 'uses' => 'ParticipationController@index']);
 Route::get('/participation/{id}', ['as => participation.show', 'uses' => 'ParticipationController@show']);
+Route::get('/participation/{id}/vip/create', ['as => participation.createVIP', 'uses' => 'ParticipationController@createVIP']);
+Route::post('/participation/{id}/vip', ['as => participation.storeVIP', 'uses' => 'ParticipationController@storeVIP']);
+Route::get('/participation/{activity_id}/vip/{participation_id}/edit', ['as => participation.editVIP', 'uses' => 'ParticipationController@editVIP']);
+Route::put('/participation/{activity_id}/vip/{participation_id}/edit', ['as => participation.updateVIP', 'uses' => 'ParticipationController@updateVIP']);
+Route::put('/participation/{activity_id}/vip/{participation_id}/cancel', ['as => participation.cancelVIP', 'uses' => 'ParticipationController@cancelVIP']);
 Route::get('/participation/participant/{id}', ['as => participation.getParticipant', 'uses' => 'ParticipationController@getParticipant']);
 Route::put('/participation/{activity_id}/participant/{participation_id}/present', ['as => participation.present', 'uses' => 'ParticipationController@present']);
 Route::put('/participation/{activity_id}/participant/{participation_id}/absent', ['as => participation.absent', 'uses' => 'ParticipationController@absent']);
