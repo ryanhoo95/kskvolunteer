@@ -23,8 +23,6 @@ use Illuminate\Http\Request;
 
 //test
 Route::post('/test', ['as' => 'api.test2', 'uses' => 'ApiController@test']);
-Route::get('/users', ['as' => 'api.test', 'uses' => 'PagesController@api']);
-Route::get('/user/{id}', ['as' => 'api.get', 'uses' => 'PagesController@show']);
 Route::get('/testTime', ['as' => 'api.testTime', 'uses' => 'ApiController@testTime']);
 
 //login

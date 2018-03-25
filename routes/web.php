@@ -29,9 +29,6 @@ Route::get('/reset_password', 'ProfileController@resetPassword');
 
 Route::put('/reset_password/{id}', ['as' => 'profile.update_password', 'uses' => 'ProfileController@updatePassword']);
 
-Route::get('/test/{type}/{id}', ['as' => 'user.test', 'uses' => 'PagesController@test']);
-// Route::get('/api/users', ['as' => 'api.test', 'uses' => 'PagesController@api']);
-
 //user management
 Route::get('/user/{type}', ['as' => 'user.index', 'uses' => 'UserController@index']);
 Route::get('/user/{type}/{id}/profile', ['as' => 'user.show', 'uses' => 'UserController@show']);
