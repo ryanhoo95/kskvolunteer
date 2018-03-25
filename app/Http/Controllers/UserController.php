@@ -53,7 +53,7 @@ class UserController extends Controller
                 return redirect('/profile');
             }
             else {
-                $user = User::find($id);
+                $user = User::findOrFail($id);
                 $volunteer_profile = VolunteerProfile::where('user_id', $id)->get()->first();
                 // $usertype = UserType::find($user->usertype);
     

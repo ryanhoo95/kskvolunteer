@@ -50,7 +50,7 @@ class ActivityController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        $activity = Activity::find($id);
+        $activity = Activity::findOrFail($id);
 
         $created_by = $activity->created_by;
 
@@ -172,7 +172,7 @@ class ActivityController extends Controller
      */
     public function edit($id)
     {
-        $activity = Activity::find($id);
+        $activity = Activity::findOrFail($id);
 
         $data = [
             'activity' => $activity,

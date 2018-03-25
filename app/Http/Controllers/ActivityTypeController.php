@@ -33,7 +33,7 @@ class ActivityTypeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        $activity_type = ActivityType::find($id);
+        $activity_type = ActivityType::findOrFail($id);
 
         $data = [
             'activity_type' => $activity_type,
@@ -102,7 +102,7 @@ class ActivityTypeController extends Controller
      */
     public function edit($id)
     {
-        $activity_type = ActivityType::find($id);
+        $activity_type = ActivityType::findOrFail($id);
 
         $data = [
             'activity_type' => $activity_type,
