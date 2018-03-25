@@ -52,7 +52,9 @@
                                 <!-- header -->
                                 <div class="box-header text-center">
                                     <h3 class="box-title pull-left"> <b>VIP</b></h3>
-                                    <a href="/participation/{{$data['activity']->activity_id}}/createVIP" class="btn btn-success pull-right"><i class="fa fa-plus"></i><span> Add VIP</span></a>
+                                    @if (Carbon::today() <= Carbon::parse($data['activity']->activity_date))
+                                        <a href="/participation/{{$data['activity']->activity_id}}/createVIP" class="btn btn-success pull-right"><i class="fa fa-plus"></i><span> Add VIP</span></a>
+                                    @endif
                                 </div>
         
                                 <!-- body -->
@@ -109,14 +111,22 @@
                                                                 {!! Form::open(['action' => ['ParticipationController@absent', $data['activity']->activity_id, $individual->participation_id], 'onsubmit' => 'return confirmMsg("absent", "'.$individual->full_name.'");', 'method' => 'POST']) !!}
 
                                                                     {{Form::hidden('_method', 'PUT')}}
-                                                                    {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['type' => 'submit', 'class' => 'btn btn-danger pull-left', 'style' => 'margin-right:5px'] )  }}
+                                                                    @if (Carbon::today() < Carbon::parse($data['activity']->activity_date))
+                                                                        {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['class' => 'btn btn-danger pull-left disabled', 'style' => 'margin-right:5px'] )  }}
+                                                                    @else
+                                                                        {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['type' => 'submit', 'class' => 'btn btn-danger pull-left', 'style' => 'margin-right:5px'] )  }}
+                                                                    @endif
                         
                                                                 {!! Form::close() !!}
                                                                 
                                                                 {!! Form::open(['action' => ['ParticipationController@present', $data['activity']->activity_id, $individual->participation_id], 'onsubmit' => 'return confirmMsg("present", "'.$individual->full_name.'");', 'method' => 'POST']) !!}
 
                                                                     {{Form::hidden('_method', 'PUT')}}
-                                                                    {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['type' => 'submit', 'class' => 'btn btn-success pull-left'] )  }}
+                                                                    @if (Carbon::today() < Carbon::parse($data['activity']->activity_date))
+                                                                        {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['class' => 'btn btn-success pull-left disabled'] )  }}
+                                                                    @else
+                                                                        {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['type' => 'submit', 'class' => 'btn btn-success pull-left'] )  }}
+                                                                    @endif
                         
                                                                 {!! Form::close() !!}
     
@@ -182,14 +192,22 @@
                                                             {!! Form::open(['action' => ['ParticipationController@absent', $data['activity']->activity_id, $member->participation_id], 'onsubmit' => 'return confirmMsg("absent", "'.$member->full_name.'");', 'method' => 'POST']) !!}
 
                                                                 {{Form::hidden('_method', 'PUT')}}
-                                                                {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['type' => 'submit', 'class' => 'btn btn-danger pull-left', 'style' => 'margin-right:5px'] )  }}
+                                                                @if (Carbon::today() < Carbon::parse($data['activity']->activity_date))
+                                                                    {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['class' => 'btn btn-danger pull-left disabled', 'style' => 'margin-right:5px'] )  }}
+                                                                @else
+                                                                    {{ Form::button('<i class="fa fa-thumbs-down"></i><span> Absent</span>', ['type' => 'submit', 'class' => 'btn btn-danger pull-left', 'style' => 'margin-right:5px'] )  }}   
+                                                                @endif
                     
                                                             {!! Form::close() !!}
                                                     
                                                             {!! Form::open(['action' => ['ParticipationController@present', $data['activity']->activity_id, $member->participation_id], 'onsubmit' => 'return confirmMsg("present", "'.$member->full_name.'");', 'method' => 'POST']) !!}
 
                                                                 {{Form::hidden('_method', 'PUT')}}
-                                                                {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['type' => 'submit', 'class' => 'btn btn-success pull-left'] )  }}
+                                                                @if (Carbon::today() < Carbon::parse($data['activity']->activity_date))
+                                                                    {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['class' => 'btn btn-success pull-left disabled'] )  }}
+                                                                @else
+                                                                    {{ Form::button('<i class="fa fa-thumbs-up"></i><span> Present</span>', ['type' => 'submit', 'class' => 'btn btn-success pull-left'] )  }}
+                                                                @endif
                     
                                                             {!! Form::close() !!}
 
