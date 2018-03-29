@@ -193,6 +193,7 @@ class ApiController extends Controller
                 $user->save();
 
                 $user->image_url = AppHelper::getProfileStorageUrl().$user->profile_image;
+                $user->usertype = AppHelper::getUserRole($user->usertype);
 
                 $data = [
                     'status' => 'success',
@@ -368,7 +369,7 @@ class ApiController extends Controller
                 $profile->user_id = $user->user_id;
                 $profile->full_name = $user->full_name;
                 $profile->profile_name = $user->profile_name;
-                $profile->join_date = Carbon::parse($user->created_by)->format('d M Y');
+                $profile->join_date = Carbon::parse($user->created_at)->format('d M Y');
                 $profile->email = $user->email;
                 $profile->date_of_birth = Carbon::parse($user->date_of_birth)->format('d M Y');
                 $profile->date_of_birth_iso = Carbon::parse($user->date_of_birth)->format('Y-m-d');;
@@ -470,6 +471,86 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
+    //get staff profile
+    public function getStaffProfile(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get()->first();
+
+        if($user) {
+            //formating the data
+            $user->join_date = Carbon::parse($user->created_at)->format('d M Y');
+            $user->date_of_birth = Carbon::parse($user->date_of_birth)->format('d M Y');
+            $user->date_of_birth_iso = Carbon::parse($user->date_of_birth)->format('Y-m-d');;
+
+            if($user->gender == "M") {
+                $user->gender = "Male";
+            }
+            else {
+                $user->gender = "Female";
+            }
+
+    
+            $user->profile_image = AppHelper::getProfileStorageUrl().$user->profile_image;
+
+            $data = [
+                'status' => 'success',
+                'data' => $user
+            ];
+            
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //update staff profile
+    public function updateStaffProfile(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'profile_image'])->first();
+
+        if($user) {
+
+            //save user data
+            $user->full_name = $request->input('full_name');
+            $user->profile_name = $request->input('profile_name');
+            $user->gender = $request->input('gender');
+            $user->date_of_birth = Carbon::parse($request->input('date_of_birth'))->format('Y-m-d');
+            $user->address = $request->input('address');
+            $user->phone_no = $request->input('phone_no');
+
+            if($request->input('profile_image') == "null") {
+                //do nothing since nothing to upload
+            }
+            else {
+                //delete the image if it is not default image
+                if($user->profile_image != "no_image.png") {
+                    Storage::delete('public/profile_image/'.$user->profile_image);
+                    }
+
+                $user->profile_image = $request->input("profile_image");
+            }
+            
+            $user->save();
+
+
+            $data = [
+                'status' => 'success',
+                'message' => 'Profile is updated.'
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
     //upload profile image
     public function uploadProfileImage(Request $request) {
         if($request->hasFile('profile_image')) {
@@ -483,7 +564,7 @@ class ApiController extends Controller
 
     //reset password
     public function resetPassword(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'password'])->first();
 
         if($user) {
             //check current password

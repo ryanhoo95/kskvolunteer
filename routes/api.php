@@ -46,6 +46,12 @@ Route::post('/getVolunteerProfile', ['as' => 'api.getVolunteerProfile', 'uses' =
 //edit volunteer profile
 Route::post('/updateVolunteerProfile', ['as' => 'api.updateVolunteerProfile', 'uses' => 'ApiController@updateVolunteerProfile']);
 
+//get staff profile
+Route::post('/getStaffProfile', ['as' => 'api.getStaffProfile', 'uses' => 'ApiController@getStaffProfile']);
+
+//edit staff profile
+Route::post('/updateStaffProfile', ['as' => 'api.updateStaffProfile', 'uses' => 'ApiController@updateStaffProfile']);
+
 //upload profile image
 Route::post('/uploadProfileImage', ['as' => 'api.uploadProfileImage', 'uses' => 'ApiController@uploadProfileImage']);
 
