@@ -93,3 +93,9 @@ Route::post('/acceptInvitation', ['as' => 'api.acceptInvitation', 'uses' => 'Api
 
 // get history
 Route::post('/getHistory', ['as' => 'api.getHistory', 'uses' => 'ApiController@getHistory']);
+
+//get today participations
+Route::post('/getTodayParticipations', ['as' => 'api.getTodayParticipations', 'uses' => 'ApiController@getTodayParticipations']);
+
+//get participations by date
+Route::post('/getParticipationsByDate', ['as' => 'api.getParticipationsByDate', 'uses' => 'ApiController@getParticipationsByDate']);

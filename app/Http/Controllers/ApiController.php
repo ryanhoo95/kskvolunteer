@@ -1536,4 +1536,137 @@ class ApiController extends Controller
 
         return response()->json($data);
     }
+
+    //get today participations
+    public function getTodayParticipations(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $today = Carbon::today()->format('Y-m-d');
+
+            $activities = Activity::where('activity_date', $today)
+                        ->where('status', 'A')
+                        ->orderBy('start_time', 'asc')
+                        ->get(['activity_id', 'activity_title', 'start_time', 'end_time', 
+                        'duration', 'slot', 'description', 'remark', 'activity_date']);
+
+            if($activities) {
+                foreach($activities as $activity) {
+                    //format the time
+                    $activity->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
+                    $activity->start_time = Carbon::parse($activity->start_time)->format('h:i A');
+                    $activity->end_time = Carbon::parse($activity->end_time)->format('h:i A');
+
+                    //format description and remark
+                    if($activity->description == null) {
+                        $activity->description = "-";
+                    }
+
+                    if($activity->remark == null) {
+                        $activity->remark = "-";
+                    }
+
+
+                    //get participation num
+                    $participation_num = Participation::where('activity_id', $activity->activity_id)
+                                        ->where(function ($q) {
+                                            $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                                        })->count();
+
+                    $activity->participation_num = $participation_num;
+
+                    if($participation_num == $activity->slot) {
+                        $activity->participation_status = "Full";
+                    }
+                    else {
+                        $activity->participation_status = "Available";
+                    }
+
+                    $activity->response = "None";
+                    $activity->action = "None";
+                }
+                
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $activities
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //get participations by date
+    public function getParticipationsByDate(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $date = Carbon::parse($request->input('date'))->format('Y-m-d');
+
+            $activities = Activity::where('activity_date', $date)
+                        ->where('status', 'A')
+                        ->orderBy('start_time', 'asc')
+                        ->get(['activity_id', 'activity_title', 'start_time', 'end_time', 
+                        'duration', 'slot', 'description', 'remark', 'activity_date']);
+           
+
+            if($activities) {
+                foreach($activities as $activity) {
+                    //format the time
+                    $activity->activity_date = Carbon::parse($activity->activity_date)->format('d M Y');
+                    $activity->start_time = Carbon::parse($activity->start_time)->format('h:i A');
+                    $activity->end_time = Carbon::parse($activity->end_time)->format('h:i A');
+
+                    //format description and remark
+                    if($activity->description == null) {
+                        $activity->description = "-";
+                    }
+
+                    if($activity->remark == null) {
+                        $activity->remark = "-";
+                    }
+
+
+                    //get participation num
+                    $participation_num = Participation::where('activity_id', $activity->activity_id)
+                                        ->where(function ($q) {
+                                            $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                                        })->count();
+
+                    $activity->participation_num = $participation_num;
+
+                    if($participation_num == $activity->slot) {
+                        $activity->participation_status = "Full";
+                    }
+                    else {
+                        $activity->participation_status = "Available";
+                    }
+
+                    $activity->response = "None";
+                    $activity->action = "None";
+                }
+                
+            }
+
+            $data = [
+                'status' => 'success',
+                'data' => $activities
+            ];
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
 }
