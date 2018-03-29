@@ -108,3 +108,6 @@ Route::post('/absent', ['as' => 'api.absent', 'uses' => 'ApiController@absent'])
 
 // present
 Route::post('/present', ['as' => 'api.present', 'uses' => 'ApiController@present']);
+
+// get volunteer details
+Route::post('/getVolunteerDetails', ['as' => 'api.getVolunteerDetails', 'uses' => 'ApiController@getVolunteerDetails']);

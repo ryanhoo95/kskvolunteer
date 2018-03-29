@@ -1939,4 +1939,51 @@ class ApiController extends Controller
 
         return response()->json($data);
     }
+
+    //get volunteer details
+    public function getVolunteerDetails(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $volunteer = DB::table('user')
+                        ->join('volunteer_profile', 'user.user_id', '=', 'volunteer_profile.user_id')
+                        ->where('user.user_id', $request->input('user_id'))
+                        ->select('user.profile_name', 'user.phone_no', 'user.created_at',
+                        'volunteer_profile.emergency_contact', 'volunteer_profile.emergency_name', 
+                        'volunteer_profile.emergency_relation', 'user.gender')
+                        ->get()->first();
+            
+            if($volunteer) {
+                $volunteer->created_at = Carbon::parse($volunteer->created_at)->format('d M Y');
+
+                if($volunteer->gender == 'M') {
+                    $volunteer->gender = 'Male';
+                }
+                else {
+                    $volunteer->gender = 'Female';
+                }
+
+                $data = [
+                    'status' => 'success',
+                    'data' => $volunteer
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Error in retrieving data.'
+                ];
+            }
+            
+            
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
 }

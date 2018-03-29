@@ -238,7 +238,6 @@ class ParticipationController extends Controller
         $participant = DB::table('user')
                         ->join('volunteer_profile', 'user.user_id', '=', 'volunteer_profile.user_id')
                         ->where('user.user_id', $id)
-                        ->where('user.status', 'A')
                         ->select('user.full_name', 'user.ic_passport', 'user.phone_no', 'user.profile_image',
                         'volunteer_profile.emergency_contact', 'volunteer_profile.emergency_name', 
                         'volunteer_profile.emergency_relation', 'user.gender')
