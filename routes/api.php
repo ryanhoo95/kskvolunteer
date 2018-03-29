@@ -99,3 +99,12 @@ Route::post('/getTodayParticipations', ['as' => 'api.getTodayParticipations', 'u
 
 //get participations by date
 Route::post('/getParticipationsByDate', ['as' => 'api.getParticipationsByDate', 'uses' => 'ApiController@getParticipationsByDate']);
+
+// get participants
+Route::post('/getParticipants', ['as' => 'api.getParticipants', 'uses' => 'ApiController@getParticipants']);
+
+// absent
+Route::post('/absent', ['as' => 'api.absent', 'uses' => 'ApiController@absent']);
+
+// present
+Route::post('/present', ['as' => 'api.present', 'uses' => 'ApiController@present']);

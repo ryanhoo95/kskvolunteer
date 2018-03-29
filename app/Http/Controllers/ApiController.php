@@ -1669,4 +1669,274 @@ class ApiController extends Controller
 
         return response()->json($data);
     }
+
+    //get participants
+    public function getParticipants(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            //get the activity
+            $activity = Activity::where('activity_id', $request->input('activity_id'))
+                    ->where('status', 'A')
+                    ->get(['activity_id', 'activity_date'])->first();
+
+            if($activity) {
+                //check date
+                $early = false;
+                if(Carbon::today() < Carbon::parse($activity->activity_date)) {
+                    $early = true;
+                }
+
+                //handle individual
+                $individual = array();
+                $invitationCodesSolo = Participation::where('activity_id', $request->input('activity_id'))
+                                        ->groupBy('invitation_code')
+                                        ->whereNotNull('invitation_code')
+                                        ->havingRaw('COUNT(invitation_code) = 1')
+                                        ->get(['invitation_code']);
+
+                foreach($invitationCodesSolo as $invitationCodeSolo) {
+                    $participant = DB::table('participation')
+                                    ->join('user', 'participation.participant_id', '=', 'user.user_id')
+                                    ->join('volunteer_profile', 'user.user_id', '=', 'volunteer_profile.user_id')
+                                    ->where('participation.invitation_code', $invitationCodeSolo->invitation_code)
+                                    ->where(function ($q) {
+                                        $q->where('participation.status', 'A')
+                                        ->orWhere('participation.status', 'P')
+                                        ->orWhere('participation.status', 'J');
+                                    })
+                                    ->select('participation.participation_id', 'user.user_id', 'user.full_name',
+                                    'participation.status', 'user.ic_passport', 'user.profile_image', 
+                                    'volunteer_profile.total_volunteer_duration')
+                                    ->get()->first();
+
+                    if($participant) {
+                        if($participant->total_volunteer_duration == 0) {
+                            $participant->category = 'Newbie';
+                        }
+                        else {
+                            $participant->category = 'Regular';
+                        }
+
+                        $participant->profile_image = AppHelper::getProfileStorageUrl().$participant->profile_image;
+                        $participant->status = AppHelper::getAttendanceResponse($participant->status);
+
+                        if($early) {
+                            $participant->action = 'None';
+                        }
+                        else {
+                            $participant->action = AppHelper::getAttendanceAction($participant->status);
+                        }
+                                        
+                        $individual[] = $participant;
+                    }
+                    
+                }
+
+                //handle vip
+                $vips = Participation::whereNull('invitation_code')
+                        ->whereNotNull('participant_name')
+                        ->where('status', 'V')
+                        ->where('activity_id', $request->input('activity_id'))
+                        ->get(['participation_id', 'participant_name', 'participant_remark']);
+
+                foreach($vips as $vip) {
+                    if($vip->participant_remark == null) {
+                        $vip->participant_remark = '-';
+                    }
+                }
+
+                //handle group
+                $groups = array();
+                $groupNumber = 1;
+                $invitationCodesGroup = Participation::where('activity_id', $request->input('activity_id'))
+                                    ->groupBy('invitation_code')
+                                    ->whereNotNull('invitation_code')
+                                    ->havingRaw('COUNT(invitation_code) > 1')
+                                    ->get(['invitation_code']);
+
+                foreach($invitationCodesGroup as $invitationCodeGroup) {
+                    $participants = DB::table('participation')
+                                ->join('user', 'participation.participant_id', '=', 'user.user_id')
+                                ->join('volunteer_profile', 'user.user_id', '=', 'volunteer_profile.user_id')
+                                ->where('participation.invitation_code', $invitationCodeGroup->invitation_code)
+                                ->where(function ($q) {
+                                    $q->where('participation.status', 'A')
+                                        ->orWhere('participation.status', 'P')
+                                        ->orWhere('participation.status', 'J');
+                                })
+                                ->select('participation.participation_id', 'user.user_id', 'user.full_name',
+                                'participation.status', 'user.ic_passport', 'user.profile_image', 
+                                'volunteer_profile.total_volunteer_duration')
+                                ->get();
+                    
+                    if(count($participants) > 0) {
+                        foreach($participants as $participant) {
+                            if($participant->total_volunteer_duration == 0) {
+                                $participant->category = 'Newbie';
+                            }
+                            else {
+                                $participant->category = 'Regular';
+                            }
+
+                            $participant->profile_image = AppHelper::getProfileStorageUrl().$participant->profile_image;
+                            $participant->status = AppHelper::getAttendanceResponse($participant->status);
+                            
+                            if($early) {
+                                $participant->action = 'None';
+                            }
+                            else {
+                                $participant->action = AppHelper::getAttendanceAction($participant->status);
+                            }
+                        }
+
+                        $group = [
+                            'groupName' => 'Group '.$groupNumber,
+                            'members' => $participants
+                        ];
+
+                        $groups[] = $group;
+                        $groupNumber++;
+                    }
+                }
+
+                $results = [
+                    'vips' => $vips,
+                    'individuals' => $individual,
+                    'groups' => $groups
+                ];
+
+                $data = [
+                    'status' => 'success',
+                    'data' => $results
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Error in retrieveing data.'
+                ];
+            }
+
+            
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //absent
+    public function absent(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $participation = Participation::where('participation_id', $request->input("participation_id"))
+                        ->get(['status', 'participant_id', 'participation_id', 'updated_by'])->first();
+
+            if($participation) {
+                $participation->status = 'A';
+                $participation->updated_by = $user->user_id;
+                $participation->save();
+
+                $volunteerProfile = VolunteerProfile::where('user_id', $participation->participant_id)
+                                    ->get(['volunteer_profile_id', 'blacklisted_number'])->first();
+
+                $volunteerProfile->blacklisted_number++;
+                $volunteerProfile->save();
+
+                //deactivate the user if he absent for 3 times
+                if($volunteerProfile->blacklisted_number == 3) {
+                    $volunteer = User::where('user_id', $participation->participant_id)
+                            ->get(['user_id', 'status', 'api_token'])->first();
+                    
+                    $volunteer->status = 'I';
+                    $volunteer->api_token = null;
+                    $volunteer->save();
+
+                    //withdraw the user from his active participation
+                    $activeParticipations = Participation::where('participant_id', $volunteer->user_id)
+                                            ->where('status', 'J')
+                                            ->get(['participation_id', 'status', 'updated_by']);
+
+                    foreach($activeParticipations as $activeParticipation) {
+                        $activeParticipation->status = 'W';
+                        $activeParticipation->updated_by = $user->user_id;
+                        $activeParticipation->save();
+                    }
+                }
+
+                $data = [
+                    'status' => 'success',
+                    'message' => 'Attendance is recorded.'
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Unable to record the attendance. Please try again later.'
+                ];
+            }
+            
+            
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //absent
+    public function present(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $participation = Participation::where('participation_id', $request->input("participation_id"))
+                        ->get(['status', 'participant_id', 'participation_id', 'updated_by', 'activity_id'])->first();
+
+            if($participation) {
+                $participation->status = 'P';
+                $participation->updated_by = $user->user_id;
+                $participation->save();
+
+                $activity = Activity::where('activity_id', $participation->activity_id)
+                            ->get(['duration'])->first();
+
+                $volunteerProfile = VolunteerProfile::where('user_id', $participation->participant_id)
+                                    ->get(['volunteer_profile_id', 'total_volunteer_duration'])->first();
+
+                $volunteerProfile->total_volunteer_duration = $activity->duration + $volunteerProfile->total_volunteer_duration;
+                $volunteerProfile->save();
+
+                $data = [
+                    'status' => 'success',
+                    'message' => 'Attendance is recorded.'
+                ];
+            }
+            else {
+                $data = [
+                    'status' => 'fail',
+                    'message' => 'Unable to record the attendance. Please try again later.'
+                ];
+            }
+            
+            
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
 }

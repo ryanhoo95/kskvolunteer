@@ -65,4 +65,36 @@ class AppHelper
 
         return $action;
     }
+
+    //get attendance response name
+    public static function getAttendanceResponse($status) {
+        switch ($status) {
+            case 'A':
+                $response = "Absent";
+                break;
+            case 'P':
+                $response = "Present";
+                break;
+            case 'J':
+                $response = "Pending";
+                break;
+        }
+
+        return $response;
+    }
+
+     //get allowed attendance action based on participation response
+     public static function getAttendanceAction($response) {
+        switch ($response) {
+            case 'Absent':
+            case 'Present':
+                $action = "None";
+                break;
+            case 'Pending':
+                $action = "Yes";
+                break;
+        }
+
+        return $action;
+    }
 }
