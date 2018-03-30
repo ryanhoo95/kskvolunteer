@@ -78,12 +78,17 @@ class ActivityTypeController extends Controller
         $request->validate($rules, $messages);
 
         //create activity type
+        $description = str_replace("\r\n", '', $request->input('description'));
+        $description = str_replace("\t", '', $description);
+        $remark = str_replace("\r\n", '', $request->input('remark'));
+        $remark = str_replace("\t", '', $remark);
+
         $activity_type = new ActivityType;
         $activity_type->activity_title = $request->input('activity_title');
         $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
         $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
-        $activity_type->description = $request->input('description');
-        $activity_type->remark = $request->input('remark');
+        $activity_type->description = $description;
+        $activity_type->remark = $remark;
         $activity_type->status = "A";
         $activity_type->created_by = Auth::user()->user_id;
         $activity_type->updated_by = Auth::user()->user_id;
@@ -138,12 +143,17 @@ class ActivityTypeController extends Controller
 
             $request->validate($rules, $messages);
 
+            $description = str_replace("\r\n", '', $request->input('description'));
+            $description = str_replace("\t", '', $description);
+            $remark = str_replace("\r\n", '', $request->input('remark'));
+            $remark = str_replace("\t", '', $remark);
+
             $activity_type = ActivityType::find($id);
             $activity_type->activity_title = $request->input('activity_title');
             $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
-            $activity_type->description = $request->input('description');
-            $activity_type->remark = $request->input('remark');
+            $activity_type->description = $description;
+            $activity_type->remark = $remark;
             $activity_type->updated_by = Auth::user()->user_id;
             $activity_type->save();
             

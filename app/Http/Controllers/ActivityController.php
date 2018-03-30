@@ -75,6 +75,11 @@ class ActivityController extends Controller
         //get the available activity type to be used as template
         $activity_types = ActivityType::where('status', 'A')->orderBy('activity_title', 'asc')->get(['activity_title', 'start_time', 'end_time', 'description', 'remark']);
 
+        foreach($activity_types as $activity_type) {
+            $activity_type->description = str_replace("\"", '\\"', $activity_type->description);
+            $activity_type->remark = str_replace("\"", '\\"', $activity_type->remark);
+        }
+
         $data = [
             'activity_types' => $activity_types
         ];
@@ -130,6 +135,11 @@ class ActivityController extends Controller
         // ];
 
         foreach($dates as $date) {
+            $description = str_replace("\r\n", '', $request->input('description'));
+            $description = str_replace("\t", '', $description);
+            $remark = str_replace("\r\n", '', $request->input('remark'));
+            $remark = str_replace("\t", '', $remark);
+
             //create activity
             $activity = new Activity;
             $activity->activity_title = $request->input('activity_title');
@@ -138,8 +148,8 @@ class ActivityController extends Controller
             $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $activity->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
             $activity->duration = $duration;
-            $activity->description = $request->input('description');
-            $activity->remark = $request->input('remark');
+            $activity->description = $description;
+            $activity->remark = $remark;
             $activity->status = "A";
             $activity->created_by = Auth::user()->user_id;
             $activity->updated_by = Auth::user()->user_id;
@@ -217,6 +227,11 @@ class ActivityController extends Controller
             $end_time = Carbon::parse($request->input('end_time'));
             $duration = $end_time->diffInHours($start_time);
 
+            $description = str_replace("\r\n", '', $request->input('description'));
+            $description = str_replace("\t", '', $description);
+            $remark = str_replace("\r\n", '', $request->input('remark'));
+            $remark = str_replace("\t", '', $remark);
+
             $activity = Activity::find($id);
             $activity->activity_title = $request->input('activity_title');
             $activity->slot = $request->input('slot');
@@ -224,8 +239,8 @@ class ActivityController extends Controller
             $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $activity->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
             $activity->duration = $duration;
-            $activity->description = $request->input('description');
-            $activity->remark = $request->input('remark');
+            $activity->description = $description;
+            $activity->remark = $remark;
             $activity->updated_by = Auth::user()->user_id;
             $activity->save();
             

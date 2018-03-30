@@ -167,7 +167,13 @@
         <!-- js function -->
         <script type="text/javascript">
             //get the data returend
-            var data = JSON.parse('<?php echo json_encode($data); ?>');
+            var rawData = '<?php echo json_encode($data, true); ?>';
+            //var data = JSON.parse('<?php echo json_encode($data); ?>');
+            //rawData = rawData.replace("\\\"", "\\\\\"");
+            // var rawObject = encodeURI(rawData);
+            console.log(rawData);
+            var data = JSON.parse(rawData);
+            console.log(data);
 
             var selected_template = document.getElementById("select_template");
             var activity_title = document.getElementById("activity_title");
@@ -190,9 +196,10 @@
                             activity_title.value = data.activity_types[i].activity_title;
                             start_time.value = parseTime(data.activity_types[i].start_time);
                             end_time.value = parseTime(data.activity_types[i].end_time);
-                            description.value = data.activity_types[i].description;
-                            remark.value = data.activity_types[i].remark;
-
+                            //description.value = data.activity_types[i].description;
+                            //remark.value = data.activity_types[i].remark;
+                            CKEDITOR.instances['description'].setData(data.activity_types[i].description);
+                            CKEDITOR.instances['remark'].setData(data.activity_types[i].remark);
                             break;
                         }
                     }
@@ -222,5 +229,14 @@
             }
         </script>
 
+    @endsection
+
+    @section('js')
+        <script>
+            $(function () {
+                CKEDITOR.replace('description');
+                CKEDITOR.replace('remark');
+            })
+        </script>
     @endsection
 @endif

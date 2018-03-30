@@ -125,6 +125,15 @@
                 </div>
             </section>
         @endsection
+
+        @section('js')
+            <script>
+                $(function () {
+                    CKEDITOR.replace('description');
+                    CKEDITOR.replace('remark');
+                })
+            </script>
+        @endsection
     @endif
     
 @endif

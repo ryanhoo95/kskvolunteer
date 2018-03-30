@@ -108,6 +108,8 @@
         <script src="{{asset("css/admin-lte/bower_components/Flot/jquery.flot.pie.js")}}"></script>
         <!-- FLOT CATEGORIES PLUGIN - Used to draw bar charts -->
         <script src="{{asset("css/admin-lte/bower_components/Flot/jquery.flot.categories.js")}}"></script>
+        <!-- CK Editor -->
+        <script src="{{asset("css/admin-lte/bower_components/ckeditor/ckeditor.js")}}"></script>
         <!-- Page script -->
 
         @yield('js')
