@@ -60,9 +60,15 @@ class PagesController extends Controller
                     if($activity->description == null) {
                         $activity->description = "-";
                     }
+                    else {
+                        $activity->description = str_replace("\"", '\\"', $activity->description);
+                    }
 
                     if($activity->remark == null) {
                         $activity->remark = "-";
+                    }
+                    else {
+                        $activity->remark = str_replace("\"", '\\"', $activity->remark);
                     }
 
 
