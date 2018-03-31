@@ -187,8 +187,10 @@
                     activity_title.value = null;
                     start_time.value = "08:00 AM";
                     end_time.value = "10:00 AM";
-                    description.value = null;
-                    remark.value = null;
+                    // description.value = null;
+                    // remark.value = null;
+                    CKEDITOR.instances['description'].setData(null);
+                    CKEDITOR.instances['remark'].setData(null);
                 }     
                 else{
                     for(var i = 0; i < data.activity_types.length; i++) {
