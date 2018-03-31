@@ -379,7 +379,7 @@ class ParticipationController extends Controller
         //validation
         $rules = [
             'name' => 'required',
-            'remark' => 'nullable'
+            'remark' => 'nullable|max:500'
         ];
 
         $messages = [
@@ -389,11 +389,14 @@ class ParticipationController extends Controller
         $request->validate($rules, $messages);
 
         //create participation
+        $remark = str_replace("\r\n", '', $request->input('remark'));
+        $remark = str_replace("\t", '', $remark);
+
         $participation = new Participation;
         $participation->activity_id = $id;
         $participation->status = 'V';
         $participation->participant_name = $request->input('name');
-        $participation->participant_remark = $request->input('remark');
+        $participation->participant_remark = $remark;
         $participation->participant_added_by = Auth::user()->user_id;
         $participation->updated_by = Auth::user()->user_id;
         $participation->save();
@@ -440,7 +443,7 @@ class ParticipationController extends Controller
         //validation
         $rules = [
             'name' => 'required',
-            'remark' => 'nullable'
+            'remark' => 'nullable|max:500'
         ];
 
         $messages = [
@@ -450,9 +453,12 @@ class ParticipationController extends Controller
         $request->validate($rules, $messages);
 
         //create participation
+        $remark = str_replace("\r\n", '', $request->input('remark'));
+        $remark = str_replace("\t", '', $remark);
+
         $participation = Participation::findOrFail($participation_id);
         $participation->participant_name = $request->input('name');
-        $participation->participant_remark = $request->input('remark');
+        $participation->participant_remark = $remark;
         $participation->updated_by = Auth::user()->user_id;
         $participation->save();
 

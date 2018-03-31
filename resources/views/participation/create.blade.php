@@ -41,7 +41,7 @@
                             <!-- remark -->
                             <div class="form-group has-feedback {{ $errors->has('remark') ? ' has-error' : '' }}">
                                 {{Form::label('remark', 'Remark')}}
-                                {{Form::textarea('remark', old('remark'), ['class' => 'form-control', 'placeholder' => 'Enter remark (Optional)', 'maxLength' => 1000, 'rows' => 3, 'id' => 'remark'])}}
+                                {{Form::textarea('remark', old('remark'), ['class' => 'form-control', 'placeholder' => 'Enter remark (Optional)', 'maxLength' => 500, 'rows' => 3, 'id' => 'remark'])}}
 
                                 @if ($errors->has('remark'))
                                     <span class="help-block">
@@ -62,4 +62,12 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('js')
+    <script>
+        $(function () {
+            CKEDITOR.replace('remark');
+        })
+    </script>
 @endsection

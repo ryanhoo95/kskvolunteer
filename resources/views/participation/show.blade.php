@@ -73,7 +73,7 @@
                                                 @foreach ($data['vips'] as $vip)
                                                     <tr>
                                                         <td style="width: 25%">{{ $vip->participant_name }}</td>
-                                                        <td style="width: 40%">{{ $vip->participant_remark }}</td>
+                                                        <td style="width: 40%">{!! $vip->participant_remark !!}</td>
                                                         @if (Carbon::today() <= Carbon::parse($data['activity']->activity_date))
                                                             <td style="width: 35%">
                                                                 {!! Form::open(['action' => ['ParticipationController@cancelVIP', $data['activity']->activity_id, $vip->participation_id], 'onsubmit' => 'return confirmMsg("cancel", "'.$vip->participant_name.'");', 'method' => 'POST']) !!}
