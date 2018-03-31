@@ -65,8 +65,8 @@ class ActivityTypeController extends Controller
             'activity_title' => 'required',
             'start_time' => 'required|date_format:h:i A',
             'end_time' => 'required|date_format:h:i A|after:start_time',
-            'description' => 'nullable',
-            'remark' => 'nullable',
+            'description' => 'nullable|max:1000',
+            'remark' => 'nullable|max:1000',
         ];
 
         $messages = [
@@ -131,8 +131,8 @@ class ActivityTypeController extends Controller
                 'activity_title' => 'required',
                 'start_time' => 'required|date_format:h:i A',
                 'end_time' => 'required|date_format:h:i A|after:start_time',
-                'description' => 'nullable',
-                'remark' => 'nullable',
+                'description' => 'nullable|max:1000',
+                'remark' => 'nullable|max:1000',
             ];
 
             $messages = [
