@@ -35,7 +35,7 @@
 
             <div class="login-logo">
                 <img src="/storage/logo.png" alt="logo" width="250px">
-                <p><b>KSK Volunteer</b></p>
+                <p><b>Volunteering at KSK</b></p>
             </div>
             <!-- /.login-logo -->
             <div class="login-box-body">
