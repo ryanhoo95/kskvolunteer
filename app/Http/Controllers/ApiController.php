@@ -262,8 +262,13 @@ class ApiController extends Controller
 
     //check for unique ic passport
     public function checkUniqueICPassport(Request $request) {
+        //format ic passport
+        $ic_passport = $request->input('ic_passport');
+        $ic_passport_replace = str_replace('-', '', $ic_passport);
+        $ic_passport_formmated = strtoupper($ic_passport_replace);
+
         //check for unique ic passport
-        $userByIc = User::where('ic_passport', $request->input('ic_passport'))->get()->first();
+        $userByIc = User::where('ic_passport', $ic_passport_formmated)->get()->first();
 
         if($userByIc) {
             $data = [
@@ -334,6 +339,9 @@ class ApiController extends Controller
         $api_token = bcrypt($insertedUser->user_id + time());
         $insertedUser->api_token = $api_token;
         $insertedUser->save();
+
+        $insertedUser->image_url = AppHelper::getProfileStorageUrl().$insertedUser->profile_image;
+        $insertedUser->usertype = AppHelper::getUserRole($insertedUser->usertype);
 
         //save the volunteer profile
         $volunteerProfile = new VolunteerProfile;
