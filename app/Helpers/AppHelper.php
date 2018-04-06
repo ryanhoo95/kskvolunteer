@@ -25,6 +25,7 @@ class AppHelper
     //get the url to profile storage
     public static function getProfileStorageUrl() {
         return "http://192.168.43.139/storage/profile_image/";
+        //return "http://192.168.0.102/storage/profile_image/";
     }
 
     //get participation response name
