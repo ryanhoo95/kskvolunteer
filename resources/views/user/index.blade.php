@@ -69,7 +69,6 @@
                             @else
                                 <table id="datatable" class="table table-bordered table-hover">
                                     <thead>
-                                        <th>Profile Name</th>
                                         <th>Full Name</th>
                                         <th>Email</th>
                                         <th>Phone No.</th>
@@ -78,13 +77,13 @@
                                             <th>Position</th>
                                         @endif
 
+                                        <th>Join At</th>
                                         <th>Status</th>
                                     </thead>
 
                                     <tbody>
                                         @foreach ($data['users'] as $user)
                                             <tr>
-                                                <td><a href="/user/{{ $data['type'] }}/{{ $user->user_id }}/profile">{{ $user->profile_name }}</a></td>
                                                 <td><a href="/user/{{ $data['type'] }}/{{ $user->user_id }}/profile">{{ $user->full_name }}</a></td>
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ $user->phone_no }}</td>
@@ -92,6 +91,8 @@
                                                 @if ($data['type'] == "staff")
                                                     <td>{{ AppHelper::getUserRole($user->usertype) }}</td>
                                                 @endif
+
+                                                <td>{{ Carbon::parse($user->created_at)->format('Y-m-d')  }}</td>
     
                                                 @if ($user->status == 'A')
                                                     <td class="text-success"><b>Active</b></td>

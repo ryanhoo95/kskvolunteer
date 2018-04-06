@@ -23,10 +23,10 @@ class UserController extends Controller
         $users = null;
 
         if($type == "staff") {
-            $users = User::where('usertype', '<', 4)->orderBy('user_id', 'asc')->get();
+            $users = User::where('usertype', '<', 4)->orderBy('created_at', 'desc')->get();
         }
         else if($type == "volunteer") {
-            $users = User::where('usertype', 4)->orderBy('user_id', 'asc')->get();
+            $users = User::where('usertype', 4)->orderBy('created_at', 'desc')->get();
         }
 
         $data = [
