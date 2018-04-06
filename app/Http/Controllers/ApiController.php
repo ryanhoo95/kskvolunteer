@@ -784,6 +784,9 @@ class ApiController extends Controller
                 $query->where('start_time', '>=', $start_time)->where('start_time', '<', $end_time);
             })
             ->orWhere(function ($query) use ($start_time, $end_time) {
+                $query->where('start_time', '<', $start_time)->where('end_time', '<=', $end_time);
+            })
+            ->orWhere(function ($query) use ($start_time, $end_time) {
                 $query->where('end_time', '>=', $start_time)->where('end_time', '<', $end_time);
             })
             ->orWhere(function ($query) use ($start_time, $end_time) {
@@ -1380,6 +1383,9 @@ class ApiController extends Controller
                     $activities = Activity::where('activity_date', $date)->where(function ($p) use ($start_time, $end_time) {
                         $p->where(function ($query) use ($start_time, $end_time) {
                             $query->where('start_time', '>=', $start_time)->where('start_time', '<', $end_time);
+                        })
+                        ->orWhere(function ($query) use ($start_time, $end_time) {
+                            $query->where('start_time', '<', $start_time)->where('end_time', '<=', $end_time);
                         })
                         ->orWhere(function ($query) use ($start_time, $end_time) {
                             $query->where('end_time', '>=', $start_time)->where('end_time', '<', $end_time);
