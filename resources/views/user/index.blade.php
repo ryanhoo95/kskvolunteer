@@ -71,6 +71,7 @@
                                     <thead>
                                         <th>Full Name</th>
                                         <th>Email</th>
+                                        <th>IC / Passport No.</th>
                                         <th>Phone No.</th>
 
                                         @if ($data['type'] == "staff")
@@ -86,6 +87,7 @@
                                             <tr>
                                                 <td><a href="/user/{{ $data['type'] }}/{{ $user->user_id }}/profile">{{ $user->full_name }}</a></td>
                                                 <td>{{ $user->email }}</td>
+                                                <td>{{ $user->ic_passport }}</td>
                                                 <td>{{ $user->phone_no }}</td>
     
                                                 @if ($data['type'] == "staff")
