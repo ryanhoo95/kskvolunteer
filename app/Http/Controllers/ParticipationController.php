@@ -87,6 +87,12 @@ class ParticipationController extends Controller
                 else {
                     $activity->participation_status = "Available";
                 }
+
+                //get attendance num
+                $attendance_num = Participation::where('activity_id', $activity->activity_id)
+                                    ->where('status', 'P')->count();
+
+                $activity->attendance_num = $attendance_num;
             }
 
 
