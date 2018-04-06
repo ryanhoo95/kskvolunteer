@@ -87,6 +87,73 @@
 
         <br>
 
+        <!-- attendance-->
+        <div class="row">
+            <!-- attendance -->
+            <div class="col-md-12">
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Participation</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="chart">
+                                    <canvas id="pieChartParticipation" style="height:250px"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                    <div class="row">
+                                    {!! Form::open(['action' => ['PagesController@report'], 'method' => 'GET']) !!}
+                                        <div class="col-xs-12 col-md-12">
+                                            <!-- date -->
+                                            <div class="form-group has-feedback {{ $errors->has('date') ? ' has-error' : '' }}">
+                                                <div class="input-group">
+                                                    <div class="input-group date">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        {{Form::text('date', null, ['class' => 'form-control pull-right', 'placeholder' => 'Enter date', 'id' => 'date_range_report'])}}
+        
+                                                        <span class="input-group-btn">
+                                                            {{Form::submit('Search', ['class' => 'btn btn-primary pull-right'])}}
+                                                        </span>
+                                                        
+                                                    </div>
+                                                </div>
+                                                
+        
+                                                @if ($errors->has('date'))
+                                                    <span class="help-block">
+                                                        *{{ $errors->first('date') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    {!! Form::close() !!}
+                                </div>
+                                <h3><span class="label label-primary" id="totalParticipation">Total: </span></h3>
+                                <ul class="chart-legend clearfix">
+                                    <li><i class="fa fa-circle" style="color: #32dc32"></i> Present</li>
+                                    <li><i class="fa fa-circle" style="color: #ff0000"></i> Absent</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+
+        <br>
+
         <!-- top 10 volunteers -->
         <div class="row">
             <div class="col-md-12">
@@ -210,6 +277,52 @@
             $('#active_volunteer_num').html(data.activeVolunteerNum);
             $('#new_volunteer_num').html(data.newVolunteerNum);
             $('#ongoing_activity_num').html(data.ongoingActivityNum);
+
+            //Date range picker for report
+            $('#date_range_report').daterangepicker({
+                
+                locale: {
+                    format: 'DD MMM YYYY'
+                }
+            })
+
+            //participation total
+            $('#totalParticipation').html("Total: " + data.participation.total);
+
+            //-------------
+            //- PIE CHART PARTICIPATION-
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvasParticipation = $('#pieChartParticipation').get(0).getContext('2d');
+            var pieChartParticipation      = new Chart(pieChartCanvasParticipation);
+            var PieDataParticipation       = data.participation.results;
+            var pieOptionsParticipation    = {
+                //Boolean - Whether we should show a stroke on each segment
+                segmentShowStroke    : true,
+                //String - The colour of each segment stroke
+                segmentStrokeColor   : '#fff',
+                //Number - The width of each segment stroke
+                segmentStrokeWidth   : 2,
+                //Number - The percentage of the chart that we cut out of the middle
+                percentageInnerCutout: 50, // This is 0 for Pie charts
+                //Number - Amount of animation steps
+                animationSteps       : 100,
+                //String - Animation easing effect
+                animationEasing      : 'easeOutBounce',
+                //Boolean - Whether we animate the rotation of the Doughnut
+                animateRotate        : true,
+                //Boolean - Whether we animate scaling the Doughnut from the centre
+                animateScale         : false,
+                //Boolean - whether to make the chart responsive to window resizing
+                responsive           : true,
+                // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                maintainAspectRatio  : true,
+                //String - A legend template
+                legendTemplate       : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>'
+            };
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            pieChartParticipation.Doughnut(PieDataParticipation, pieOptionsParticipation);
 
             //-------------
             //- PIE CHART OCCUPATION-

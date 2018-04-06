@@ -24,7 +24,7 @@ class PagesController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
     }
 
     //go to homepage
@@ -101,7 +101,7 @@ class PagesController extends Controller
     }
 
     //get the report
-    public function report() {
+    public function report(Request $request) {
         //get active staff number
         $staffNum = User::where('status', 'A')
                     ->where(function ($q) {
@@ -130,6 +130,97 @@ class PagesController extends Controller
         $ongoingActivityNum = Activity::where('status', 'A')
                             ->where('activity_date', '>=', $today)
                             ->count();
+
+        //get participation
+        if($request->input('date')) {
+            //validation
+            $rules = [
+                'date' => 'required'
+            ];
+
+            $messages = [
+                'required' => 'Please fill out this field.'
+            ];
+
+            $request->validate($rules, $messages);
+
+            //get the date range
+            $start_date = Carbon::parse(substr($request->input('date'), 0, 11))->format('Y-m-d');
+            $end_date = Carbon::parse(substr($request->input('date'), 14, 11))->format('Y-m-d');
+
+            $participation_num = DB::table('participation')
+                                ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+                                ->where('activity.activity_date', '>=', $start_date)
+                                ->where('activity.activity_date', '<=', $end_date)
+                                ->where(function ($q) {
+                                    $q->where('participation.status', 'A')->orWhere('participation.status', 'P')->orWhere('participation.status', 'J');
+                                })
+                                ->count();
+            
+            $present_num = DB::table('participation')
+                        ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+                        ->where('activity.activity_date', '>=', $start_date)
+                        ->where('activity.activity_date', '<=', $end_date)
+                        ->where('participation.status', 'P') 
+                        ->count();
+
+            // $absent_num = DB::table('participation')
+            //             ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+            //             ->whereIn('activity.activity_date', [$start_date, $end_date])
+            //             ->where(function ($q) {
+            //                 $q->where('participation.status', 'A')->orWhere('participation.status', 'J');
+            //             })
+            //             ->count();
+            $absent_num = $participation_num - $present_num;
+        }
+        else {
+            $today = Carbon::today()->format('Y-m-d');
+            $participation_num = DB::table('participation')
+                                ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+                                ->where('activity.activity_date', $today)
+                                ->where(function ($q) {
+                                    $q->where('participation.status', 'A')->orWhere('participation.status', 'P')->orWhere('participation.status', 'J');
+                                })
+                                ->count();
+
+            $present_num = DB::table('participation')
+                        ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+                        ->where('activity.activity_date', $today)
+                        ->where('participation.status', 'P') 
+                        ->count();
+        
+            // $absent_num = DB::table('participation')
+            //             ->join('activity', 'participation.activity_id', '=', 'activity.activity_id')
+            //             ->where('activity.activity_date', $today)
+            //             ->where(function ($q) {
+            //                 $q->where('participation.status', 'A')->orWhere('participation.status', 'J');
+            //             })
+            //             ->count();
+
+            $absent_num = $participation_num - $present_num;
+        }
+
+        $participationResults = array();
+
+        $present = new Participation();
+        $present->value = $present_num;
+        $present->label = 'Present';
+        $present->color = '#32dc32';
+        $present->hightlight = '#32dc32';
+        $participationResults[] = $present;
+
+        $absent = new Participation();
+        $absent->value = $absent_num;
+        $absent->label = 'Absent';
+        $absent->color = '#ff0000';
+        $absent->hightlight = '#ff0000';
+        $participationResults[] = $absent;
+
+        $participationData = [
+            'total' => $participation_num,
+            'results' => $participationResults
+        ];
+        
 
         //get occupation
         $occupationTypes = OccupationType::get();
@@ -281,6 +372,7 @@ class PagesController extends Controller
             'activeVolunteerNum' => $activeVolunteerNum,
             'newVolunteerNum' => $newVolunteerNum,
             'ongoingActivityNum' => $ongoingActivityNum,
+            'participation' => $participationData,
             'occupations' => $occupationResults,
             'mediums' => $mediumResults,
             'volunteersName' => $topVolunteersName,
@@ -290,4 +382,5 @@ class PagesController extends Controller
         //return $data;
         return view('pages.report')->with('data', $data);
     }
+
 }
