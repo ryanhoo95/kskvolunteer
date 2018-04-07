@@ -62,30 +62,6 @@
                                                 @endif
                                             </div>
         
-                                            <!-- assembly point -->
-                                            <div class="form-group has-feedback {{ $errors->has('assembly_point') ? ' has-error' : '' }}">
-                                                {{Form::label('assembly_point', 'Assembly Point <span class="text-danger">*</span>', [], false)}}
-                                                {{Form::text('assembly_point', old('assembly_point'), ['class' => 'form-control', 'placeholder' => 'Enter assembly point', 'maxLength' => 255])}}
-        
-                                                @if ($errors->has('assembly_point'))
-                                                    <span class="help-block">
-                                                        *{{ $errors->first('assembly_point') }}
-                                                    </span>
-                                                @endif
-                                            </div>
-        
-                                            <!--access -->
-                                            <div class="form-group has-feedback {{ $errors->has('access') ? ' has-error' : '' }}">
-                                                {{Form::label('access', 'Who Can Join This Activity <span class="text-danger">*</span>', [], false)}}
-                                                {{Form::select('access', ['R' => 'Regular', 'N' => 'Newbie', 'B' => 'Both'], 'B', ['class' => 'form-control'])}}
-        
-                                                @if ($errors->has('access'))
-                                                    <span class="help-block">
-                                                        *{{ $errors->first('access') }}
-                                                    </span>
-                                                @endif
-                                            </div>
-        
                                             <div class="row">
                                                 <!-- start time -->
                                                 <div class="bootstrap-timepicker col-md-6">
@@ -124,6 +100,30 @@
                                                         @endif
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            <!-- assembly point -->
+                                            <div class="form-group has-feedback {{ $errors->has('assembly_point') ? ' has-error' : '' }}">
+                                                {{Form::label('assembly_point', 'Assembly Point <span class="text-danger">*</span>', [], false)}}
+                                                {{Form::text('assembly_point', old('assembly_point'), ['class' => 'form-control', 'placeholder' => 'Enter assembly point', 'maxLength' => 255])}}
+        
+                                                @if ($errors->has('assembly_point'))
+                                                    <span class="help-block">
+                                                        *{{ $errors->first('assembly_point') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+        
+                                            <!--access -->
+                                            <div class="form-group has-feedback {{ $errors->has('access') ? ' has-error' : '' }}">
+                                                {{Form::label('access', 'Who Can Join This Activity <span class="text-danger">*</span>', [], false)}}
+                                                {{Form::select('access', ['R' => 'Regular', 'N' => 'Newbie', 'B' => 'Both'], 'B', ['class' => 'form-control'])}}
+        
+                                                @if ($errors->has('access'))
+                                                    <span class="help-block">
+                                                        *{{ $errors->first('access') }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
 

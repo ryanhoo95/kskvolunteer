@@ -53,6 +53,16 @@
                                     </tr>
 
                                     <tr>
+                                        <td><b>Start Time</b></td>
+                                        <td>{{ Carbon::parse($data['activity_type']->start_time)->format('h:i A') }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>End Time</b></td>
+                                        <td>{{ Carbon::parse($data['activity_type']->end_time)->format('h:i A') }}</td>
+                                    </tr>
+
+                                    <tr>
                                         <td style="width: 30%"><b>Assembly Point</b></td>
                                         <td id="full_name" style="width: 70%">{{ $data['activity_type']->assembly_point }}</td>
                                     </tr>
@@ -67,16 +77,6 @@
                                         @else
                                             <td>Both</td>
                                         @endif
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>Start Time</b></td>
-                                        <td>{{ Carbon::parse($data['activity_type']->start_time)->format('h:i A') }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><b>End Time</b></td>
-                                        <td>{{ Carbon::parse($data['activity_type']->end_time)->format('h:i A') }}</td>
                                     </tr>
 
                                     <tr>
