@@ -38,7 +38,7 @@
 
                                     <!-- activity title -->
                                     <div class="form-group has-feedback {{ $errors->has('activity_title') ? ' has-error' : '' }}">
-                                        {{Form::label('activity_title', 'Activity Title')}}
+                                        {{Form::label('activity_title', 'Activity Title <span class="text-danger">*</span>', [], false)}}
                                         {{Form::text('activity_title', old('title'), ['class' => 'form-control', 'placeholder' => 'Enter activity title', 'maxLength' => 100])}}
 
                                         @if ($errors->has('activity_title'))
@@ -52,7 +52,7 @@
                                         <!-- start time -->
                                         <div class="bootstrap-timepicker col-md-6">
                                             <div class="form-group has-feedback {{ $errors->has('start_time') ? ' has-error' : '' }}">
-                                                {{Form::label('start_time', 'Start Time')}}
+                                                {{Form::label('start_time', 'Start Time <span class="text-danger">*</span>', [], false)}}
                                                 <div class="input-group">
                                                     <div class="input-group-addon">
                                                         <i class="fa fa-clock-o"></i>
@@ -71,7 +71,7 @@
                                         <!-- end time -->
                                         <div class="bootstrap-timepicker col-md-6">
                                             <div class="form-group has-feedback {{ $errors->has('end_time') ? ' has-error' : '' }}">
-                                                {{Form::label('end_time', 'End Time')}}
+                                                {{Form::label('end_time', 'End Time <span class="text-danger">*</span>', [], false)}}
                                                 <div class="input-group">
                                                     <div class="input-group-addon">
                                                         <i class="fa fa-clock-o"></i>
