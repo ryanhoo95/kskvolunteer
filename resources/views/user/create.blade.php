@@ -38,7 +38,7 @@
 
                                 <!-- full name -->
                                 <div class="form-group has-feedback {{ $errors->has('full_name') ? ' has-error' : '' }}">
-                                    {{Form::label('full_name', 'Full Name')}}
+                                    {{Form::label('full_name', 'Full Name <span class="text-danger">*</span>', [], false)}}
                                     {{Form::text('full_name', old('full_name'), ['class' => 'form-control', 'placeholder' => 'Enter full name', 'maxLength' => 100])}}
 
                                     @if ($errors->has('full_name'))
@@ -50,7 +50,7 @@
 
                                 <!-- email -->
                                 <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
-                                    {{Form::label('email', 'Email')}}
+                                    {{Form::label('email', 'Email <span class="text-danger">*</span>', [], false)}}
                                     {{Form::text('email', old('email'), ['class' => 'form-control', 'placeholder' => 'Enter email', 'maxLength' => 100])}}
 
                                     @if ($errors->has('email'))
@@ -62,7 +62,7 @@
 
                                 <!-- email confirmation -->
                                 <div class="form-group has-feedback {{ $errors->has('email_confirmation') ? ' has-error' : '' }}">
-                                    {{Form::label('email_confirmation', 'Confirm Email')}}
+                                    {{Form::label('email_confirmation', 'Confirm Email <span class="text-danger">*</span>', [], false)}}
                                     {{Form::text('email_confirmation', old('email_confirmation'), ['class' => 'form-control', 'placeholder' => 'Confirm email', 'maxLength' => 100])}}
 
                                     @if ($errors->has('email_confirmation'))
@@ -75,7 +75,7 @@
                                 <div class="row">
                                     <!-- ic passport -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('ic_passport') ? ' has-error' : '' }}">
-                                        {{Form::label('ic_passport', 'IC / Passport No.')}}
+                                        {{Form::label('ic_passport', 'IC / Passport No. <span class="text-danger">*</span>', [], false)}}
                                         {{Form::text('ic_passport', old('ic_passport'), ['class' => 'form-control', 'placeholder' => 'Enter IC or passport no.', 'maxLength' => 20])}}
                                         <small class="text-warning">This field will be used as the default password.</small>
     
@@ -88,7 +88,7 @@
 
                                     <!-- ic passport confirmation -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('ic_passport_confirmation') ? ' has-error' : '' }}">
-                                        {{Form::label('ic_passport_confirmation', 'Confirm IC / Passport No.')}}
+                                        {{Form::label('ic_passport_confirmation', 'Confirm IC / Passport No. <span class="text-danger">*</span>', [], false)}}
                                         {{Form::text('ic_passport_confirmation', old('ic_passport_confirmation'), ['class' => 'form-control', 'placeholder' => 'Confirm IC or passport no.', 'maxLength' => 20])}}
                                         <small class="text-warning">This field <b>CANNOT</b> be changed later.</small>
     
@@ -103,7 +103,7 @@
                                 <div class="row">
                                     <!-- gender -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('gender') ? ' has-error' : '' }}">
-                                        {{Form::label('gender', 'Gender')}}
+                                        {{Form::label('gender', 'Gender <span class="text-danger">*</span>', [], false)}}
                                         {{Form::select('gender', ['M' => 'Male', 'F' => 'Female'], Auth::user()->gender, ['class' => 'form-control'])}}
     
                                         @if ($errors->has('gender'))
@@ -115,7 +115,7 @@
 
                                     <!-- dob -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('date_of_birth') ? ' has-error' : '' }}">
-                                        {{Form::label('date_of_birth', 'Date of Birth')}}
+                                        {{Form::label('date_of_birth', 'Date of Birth <span class="text-danger">*</span>', [], false)}}
                                         <div class="input-group date">
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
@@ -134,7 +134,7 @@
                                 <div class="row">
                                     <!-- contact no-->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('phone_no') ? ' has-error' : '' }}">
-                                        {{Form::label('phone_no', 'Contact No.')}}
+                                        {{Form::label('phone_no', 'Contact No. <span class="text-danger">*</span>', [], false)}}
                                         {{Form::text('phone_no', old('phone_no'), ['class' => 'form-control', 'placeholder' => 'Enter contact no.', 'maxLength' => 20])}}
     
                                         @if ($errors->has('phone_no'))
@@ -147,7 +147,7 @@
                                     <!-- user type -->
                                     @if (Auth::user()->usertype == 1)
                                         <div class="form-group col-md-6 has-feedback {{ $errors->has('usertype') ? ' has-error' : '' }}">
-                                            {{Form::label('usertype', 'User Type')}}
+                                            {{Form::label('usertype', 'User Type <span class="text-danger">*</span>', [], false)}}
                                             {{Form::select('usertype', ['2' => 'Admin', '3' => 'Staff'], '3', ['class' => 'form-control'])}}
         
                                             @if ($errors->has('usertype'))
