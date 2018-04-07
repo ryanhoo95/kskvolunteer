@@ -28,7 +28,7 @@
 
                             <!-- name -->
                             <div class="form-group has-feedback {{ $errors->has('name') ? ' has-error' : '' }}">
-                                {{Form::label('name', 'Name')}}
+                                {{Form::label('name', 'Name <span class="text-danger">*</span>', [], false)}}
                                 {{Form::text('name', $data['participation']->participant_name, ['class' => 'form-control', 'placeholder' => 'Enter VIP name', 'maxLength' => 100])}}
 
                                 @if ($errors->has('name'))

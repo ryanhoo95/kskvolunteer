@@ -46,7 +46,7 @@
                                 
                                 <!-- profile name -->
                                 <div class="form-group has-feedback {{ $errors->has('profile_name') ? ' has-error' : '' }}">
-                                    {{Form::label('profile_name', 'Profile Name')}}
+                                    {{Form::label('profile_name', 'Profile Name <span class="text-danger">*</span>', [], false)}}
                                     {{Form::text('profile_name', Auth::user()->profile_name, ['class' => 'form-control', 'placeholder' => 'Enter your profile name', 'maxLength' => 100])}}
 
                                     @if ($errors->has('profile_name'))
@@ -58,7 +58,7 @@
             
                                 <!-- full name -->
                                 <div class="form-group has-feedback {{ $errors->has('full_name') ? ' has-error' : '' }}">
-                                    {{Form::label('full_name', 'Full Name')}}
+                                    {{Form::label('full_name', 'Full Name <span class="text-danger">*</span>', [], false)}}
                                     {{Form::text('full_name', Auth::user()->full_name, ['class' => 'form-control', 'placeholder' => 'Enter your full name', 'maxLength' => 100])}}
 
                                     @if ($errors->has('full_name'))
@@ -71,7 +71,7 @@
                                 <div class="row">
                                     <!-- gender -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('gender') ? ' has-error' : '' }}">
-                                        {{Form::label('gender', 'Gender')}}
+                                        {{Form::label('gender', 'Gender <span class="text-danger">*</span>', [], false)}}
                                         {{Form::select('gender', ['M' => 'Male', 'F' => 'Female'], Auth::user()->gender, ['class' => 'form-control'])}}
     
                                         @if ($errors->has('gender'))
@@ -83,7 +83,7 @@
 
                                     <!-- date of birth -->
                                     <div class="form-group col-md-6 has-feedback {{ $errors->has('date_of_birth') ? ' has-error' : '' }}">
-                                        {{Form::label('date_of_birth', 'Date of Birth')}}
+                                        {{Form::label('date_of_birth', 'Date of Birth <span class="text-danger">*</span>', [], false)}}
                                         <div class="input-group date">
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
@@ -101,7 +101,7 @@
                                 
                                 <!-- phone no -->
                                 <div class="form-group has-feedback {{ $errors->has('phone_no') ? ' has-error' : '' }}">
-                                    {{Form::label('phone_no', 'Contact No.')}}
+                                    {{Form::label('phone_no', 'Contact No. <span class="text-danger">*</span>', [], false)}}
                                     {{Form::text('phone_no', Auth::user()->phone_no, ['class' => 'form-control', 'placeholder' => 'Enter your contact no.', 'maxLength' => 20])}}
 
                                     @if ($errors->has('phone_no'))
@@ -113,7 +113,7 @@
 
                                 <!-- address -->
                                 <div class="form-group has-feedback {{ $errors->has('address') ? ' has-error' : '' }}">
-                                    {{Form::label('address', 'Address')}}
+                                    {{Form::label('address', 'Address <span class="text-danger">*</span>', [], false)}}
                                     {{Form::text('address', Auth::user()->address, ['class' => 'form-control', 'placeholder' => 'Enter your address.', 'maxLength' => 255])}}
 
                                     @if ($errors->has('address'))
