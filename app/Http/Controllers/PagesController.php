@@ -24,7 +24,7 @@ class PagesController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     //go to homepage
@@ -86,6 +86,12 @@ class PagesController extends Controller
                     else {
                         $activity->participation_status = "Available";
                     }
+
+                    //get attendance num
+                    $attendance_num = Participation::where('activity_id', $activity->activity_id)
+                                    ->where('status', 'P')->count();
+
+                    $activity->attendance_num = $attendance_num;
                 }
 
                 $data = [

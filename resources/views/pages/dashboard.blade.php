@@ -44,6 +44,7 @@
                                             <th>Start Time</th>
                                             <th>End Time</th>
                                             <th>Participants</th>
+                                            <th>Attendance</th>
                                         </thead>
 
                                         <tbody>
@@ -65,6 +66,12 @@
                                                             </a>
                                                         </td>
                                                     @endif
+
+                                                    <td class="text-primary">
+                                                        <a class="text-primary" href="/participation/{{ $activity->activity_id }}">
+                                                            <b>{{ $activity->attendance_num }} / {{ $activity->participation_num }}</b>
+                                                        </a>
+                                                    </td>
                                                     
                                                 </tr>
                                             @endforeach
