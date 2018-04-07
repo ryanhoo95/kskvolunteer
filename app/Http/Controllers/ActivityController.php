@@ -7,6 +7,7 @@ use Carbon;
 use Auth;
 use App\Activity;
 use App\ActivityType;
+use App\Participation;
 use App\User;
 use Illuminate\Database\QueryException;
 
@@ -205,11 +206,14 @@ class ActivityController extends Controller
      */
     public function update(Request $request, $id, $action) {
         if($action == "update_info") {
+            $participation_num = Participation::where('activity_id', $id)->where(function ($q) {
+                $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+            })->count();
+
             //validation
             $rules = [
                 'activity_title' => 'required',
-                'access' => 'required',
-                'slot' => 'required|numeric',
+                'slot' => 'required|numeric|min:'.$participation_num,
                 'date' => 'required|date',
                 'start_time' => 'required|date_format:h:i A',
                 'end_time' => 'required|date_format:h:i A|after:start_time',
@@ -240,7 +244,7 @@ class ActivityController extends Controller
 
             $activity = Activity::find($id);
             $activity->activity_title = $request->input('activity_title');
-            $activity->access = $request->input('access');
+            //$activity->access = $request->input('access');
             $activity->slot = $request->input('slot');
             $activity->activity_date = Carbon::parse($request->input('date'))->format('Y-m-d');
             $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
