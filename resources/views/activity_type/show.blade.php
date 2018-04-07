@@ -75,7 +75,7 @@
                                         @elseif($data['activity_type']->access  == 'N')
                                             <td>Newbie</td>
                                         @else
-                                            <td>Both</td>
+                                            <td>Regular, Newbie</td>
                                         @endif
                                     </tr>
 
