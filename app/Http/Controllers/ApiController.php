@@ -1996,7 +1996,8 @@ class ApiController extends Controller
                         ->where('user.user_id', $request->input('user_id'))
                         ->select('user.profile_name', 'user.phone_no', 'user.created_at',
                         'volunteer_profile.emergency_contact', 'volunteer_profile.emergency_name', 
-                        'volunteer_profile.emergency_relation', 'user.gender')
+                        'volunteer_profile.emergency_relation', 'user.gender', 'volunteer_profile.allergy',
+                        'volunteer_profile.allergy_remark')
                         ->get()->first();
             
             if($volunteer) {
@@ -2007,6 +2008,13 @@ class ApiController extends Controller
                 }
                 else {
                     $volunteer->gender = 'Female';
+                }
+
+                if($volunteer->allergy == 'N') {
+                    $volunteer->allergy = 'None';
+                }
+                else {
+                    $volunteer->allergy = $volunteer->allergy_remark;
                 }
 
                 $data = [

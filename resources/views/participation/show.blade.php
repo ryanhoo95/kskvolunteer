@@ -346,6 +346,11 @@
                             </tr>
 
                             <tr>
+                                <td><b>Allergy / Sickness</b></td>
+                                <td id="participant-allergy"></td>
+                            </tr>
+
+                            <tr>
                                 <td><b>Emergency Contact Person</b></td>
                                 <td id="emergency-contact-person"></td>
                             </tr>
@@ -413,6 +418,7 @@
                         $('#participant-ic').html(data.participant.ic_passport);
                         $('#participant-gender').html(data.participant.gender);
                         $('#participant-contact').html(data.participant.phone_no);
+                        $('#participant-allergy').html(data.participant.allergy);
                         $('#emergency-contact-person').html(data.participant.emergency_name + 
                             " (" + data.participant.emergency_relation + ")");
                         $('#emergency-contact-no').html(data.participant.emergency_contact);

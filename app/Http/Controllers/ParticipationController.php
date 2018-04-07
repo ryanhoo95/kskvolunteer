@@ -258,7 +258,8 @@ class ParticipationController extends Controller
                         ->where('user.user_id', $id)
                         ->select('user.full_name', 'user.ic_passport', 'user.phone_no', 'user.profile_image',
                         'volunteer_profile.emergency_contact', 'volunteer_profile.emergency_name', 
-                        'volunteer_profile.emergency_relation', 'user.gender')
+                        'volunteer_profile.emergency_relation', 'user.gender', 'volunteer_profile.allergy',
+                        'volunteer_profile.allergy_remark')
                         ->get()->first();
         
         if($participant->gender == 'M') {
@@ -266,6 +267,13 @@ class ParticipationController extends Controller
         }
         else {
             $participant->gender = 'Female';
+        }
+
+        if($participant->allergy == 'N') {
+            $participant->allergy = 'None';
+        }
+        else {
+            $participant->allergy = $participant->allergy_remark;
         }
 
         $participant->image_url = AppHelper::getProfileStorageUrl().$participant->profile_image;
