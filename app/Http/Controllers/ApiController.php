@@ -617,13 +617,27 @@ class ApiController extends Controller
 
     //get today activities
     public function getTodayActivities(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'usertype'])->first();
+        //$user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'usertype'])->first();
+        $user = DB::table('user')
+                ->join('volunteer_profile', 'user.user_id', '=', 'volunteer_profile.user_id')
+                ->where('user.api_token', $request->input('api_token'))
+                ->select('user.user_id', 'user.usertype', 'volunteer_profile.total_volunteer_duration')
+                ->get()->first();
 
         if($user) {
-            $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)
-                                ->get(['total_volunteer_duration'])->first();
+            // $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)
+            //                     ->get(['volunteer_profile_id', 'total_volunteer_duration'])->first();
 
-            if($volunteerProfile->total_volunteer_duration > 0) {
+            // if($volunteerProfile) {
+            //     if($volunteerProfile->total_volunteer_duration > 0) {
+            //         $user->category = 'Regular';
+            //     }
+            //     else {
+            //         $user->category = 'Newbie';
+            //     }
+            // }
+
+            if($user->total_volunteer_duration > 0) {
                 $user->category = 'Regular';
             }
             else {
