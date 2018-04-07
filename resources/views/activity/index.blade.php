@@ -58,6 +58,7 @@
                                 <table id="datatable" class="table table-bordered table-hover">
                                     <thead>
                                         <th>Title</th>
+                                        <th>For</th>
                                         <th>Date</th>
                                         <th>Start Time</th>
                                         <th>End Time</th>
@@ -69,6 +70,15 @@
                                         @foreach ($data['activities'] as $activity)
                                             <tr>
                                                 <td><a href="/activity/{{ $activity->activity_id }}">{{ $activity->activity_title }}</a></td>
+                                                
+                                                @if ($activity->access  == 'R')
+                                                    <td>Regular</td>
+                                                @elseif($activity->access  == 'N')
+                                                    <td>Newbie</td>
+                                                @else
+                                                    <td>Regular, Newbie</td>
+                                                @endif
+                                                
                                                 <td>{{ Carbon::parse($activity->activity_date)->format('Y-m-d') }}</td>
                                                 <td>{{ Carbon::parse($activity->start_time)->format('g:i A') }}</td>
                                                 <td>{{ Carbon::parse($activity->end_time)->format('g:i A') }}</td>

@@ -73,7 +73,7 @@ class ActivityController extends Controller
     public function create()
     {
         //get the available activity type to be used as template
-        $activity_types = ActivityType::where('status', 'A')->orderBy('activity_title', 'asc')->get(['activity_title', 'start_time', 'end_time', 'description', 'remark']);
+        $activity_types = ActivityType::where('status', 'A')->orderBy('activity_title', 'asc')->get(['activity_title', 'start_time', 'end_time', 'description', 'remark', 'activity_type_name', 'access', 'assembly_point']);
 
         foreach($activity_types as $activity_type) {
             $activity_type->description = str_replace("\"", '\\"', $activity_type->description);
@@ -98,10 +98,12 @@ class ActivityController extends Controller
         //validation
         $rules = [
             'activity_title' => 'required',
+            'access' => 'required',
             'slot' => 'required|numeric',
             'date' => 'required',
             'start_time' => 'required|date_format:h:i A',
             'end_time' => 'required|date_format:h:i A|after:start_time',
+            'assembly_point' => 'required',
             'description' => 'nullable|max:1000',
             'remark' => 'nullable|max:1000',
         ];
@@ -143,10 +145,12 @@ class ActivityController extends Controller
             //create activity
             $activity = new Activity;
             $activity->activity_title = $request->input('activity_title');
+            $activity->access = $request->input('access');
             $activity->slot = $request->input('slot');
             $activity->activity_date = $date;
             $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $activity->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+            $activity->assembly_point = $request->input('assembly_point');
             $activity->duration = $duration;
             $activity->description = $description;
             $activity->remark = $remark;
@@ -204,10 +208,12 @@ class ActivityController extends Controller
             //validation
             $rules = [
                 'activity_title' => 'required',
+                'access' => 'required',
                 'slot' => 'required|numeric',
                 'date' => 'required|date',
                 'start_time' => 'required|date_format:h:i A',
                 'end_time' => 'required|date_format:h:i A|after:start_time',
+                'assembly_point' => 'required',
                 'description' => 'nullable|max:1000',
                 'remark' => 'nullable|max:1000',
             ];
@@ -234,10 +240,12 @@ class ActivityController extends Controller
 
             $activity = Activity::find($id);
             $activity->activity_title = $request->input('activity_title');
+            $activity->access = $request->input('access');
             $activity->slot = $request->input('slot');
             $activity->activity_date = Carbon::parse($request->input('date'))->format('Y-m-d');
             $activity->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $activity->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+            $activity->assembly_point = $request->input('assembly_point');
             $activity->duration = $duration;
             $activity->description = $description;
             $activity->remark = $remark;

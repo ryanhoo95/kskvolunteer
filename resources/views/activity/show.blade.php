@@ -57,6 +57,28 @@
                                 </tr>
 
                                 <tr>
+                                    <td style="width: 30%"><b>Assembly Point</b></td>
+                                    <td style="width: 70%">{{ $data['activity']->assembly_point }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><b>Who Can Join This Activity</b></td>
+                                
+                                    @if ($data['activity']->access  == 'R')
+                                        <td>Regular</td>
+                                    @elseif($data['activity']->access  == 'N')
+                                        <td>Newbie</td>
+                                    @else
+                                        <td>Regular, Newbie</td>
+                                    @endif
+                                </tr>
+
+                                <tr>
+                                    <td><b>Slot</b></td>
+                                    <td>{{ $data['activity']->slot }}</td>
+                                </tr>
+
+                                <tr>
                                     <td><b>Description</b></td>
                                 
                                     @if ($data['activity']->description  == null)
