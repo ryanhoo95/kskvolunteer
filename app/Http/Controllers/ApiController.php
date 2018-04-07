@@ -617,13 +617,55 @@ class ApiController extends Controller
 
     //get today activities
     public function getTodayActivities(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'usertype'])->first();
 
         if($user) {
+            $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)
+                                ->get(['total_volunteer_duration'])->first();
+
+            if($volunteerProfile->total_volunteer_duration > 0) {
+                $user->category = 'Regular';
+            }
+            else {
+                $user->category = 'Newbie';
+            }
+
             $today = Carbon::today()->format('Y-m-d');
             $current_time = Carbon::now()->format('H:i:s');
 
-            $todayActivities = Activity::where('activity_date', $today)->where('start_time', '>', $current_time)->where('status', 'A')->orderBy('start_time', 'asc')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+            if($user->category == 'Regular' && AppHelper::getUserRole($user->usertype) == 'Volunteer') {
+                //access is B or R
+                $todayActivities = Activity::where('activity_date', $today)
+                ->where('start_time', '>', $current_time)
+                ->where('status', 'A')
+                ->where(function ($q) {
+                    $q->where('access', 'B')->orWhere('access', 'R');
+                })
+                ->orderBy('start_time', 'asc')
+                ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 
+                'remark', 'assembly_point']);
+            }
+            else if($user->category == 'Newbie' && AppHelper::getUserRole($user->usertype) == 'Volunteer') {
+                //access is B or N
+                $todayActivities = Activity::where('activity_date', $today)
+                ->where('start_time', '>', $current_time)
+                ->where('status', 'A')
+                ->where(function ($q) {
+                    $q->where('access', 'B')->orWhere('access', 'N');
+                })
+                ->orderBy('start_time', 'asc')
+                ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 
+                'remark', 'assembly_point']);
+            }
+            else {
+                //dont care about access
+                $todayActivities = Activity::where('activity_date', $today)
+                ->where('start_time', '>', $current_time)
+                ->where('status', 'A')
+                ->orderBy('start_time', 'asc')
+                ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 
+                'remark', 'assembly_point']);
+            }
 
             if($todayActivities) {
                 foreach($todayActivities as $todayActivity) {
@@ -696,21 +738,92 @@ class ApiController extends Controller
 
     //get activities by date
     public function getActivitiesByDate(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'usertype'])->first();
 
         if($user) {
+            $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)
+                                ->get(['total_volunteer_duration'])->first();
+
+            if($volunteerProfile->total_volunteer_duration > 0) {
+                $user->category = 'Regular';
+            }
+            else {
+                $user->category = 'Newbie';
+            }
+
             $date = Carbon::parse($request->input('date'))->format('Y-m-d');
             $today = Carbon::today()->format('Y-m-d');
             $current_time = Carbon::now()->format('H:i:s');
 
-            //if selected date is today, get only the onwards available activities
-            if($date == $today) {
-                $activities = Activity::where('activity_date', $date)->where('start_time', '>', $current_time)->where('status', 'A')->orderBy('start_time', 'asc')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+            if($user->category == 'Regular' && AppHelper::getUserRole($user->usertype) == 'Volunteer') {
+                //access is B or R
+                //if selected date is today, get only the onwards available activities
+                if($date == $today) {
+                    $activities = Activity::where('activity_date', $date)
+                                ->where('start_time', '>', $current_time)
+                                ->where('status', 'A')
+                                ->where(function ($q) {
+                                    $q->where('access', 'B')->orWhere('access', 'R');
+                                })
+                                ->orderBy('start_time', 'asc')
+                                ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 
+                                'description', 'remark', 'assembly_point']);
+                }
+                else {
+                    $activities = Activity::where('activity_date', $date)
+                                ->where('status', 'A')
+                                ->where(function ($q) {
+                                    $q->where('access', 'B')->orWhere('access', 'R');
+                                })
+                                ->orderBy('start_time', 'asc')
+                                ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 
+                                'description', 'remark', 'assembly_point']);
+                }
+            }
+            else if($user->category == 'Newbie' && AppHelper::getUserRole($user->usertype) == 'Volunteer') {
+                //access is B or N
+                //if selected date is today, get only the onwards available activities
+                if($date == $today) {
+                    $activities = Activity::where('activity_date', $date)
+                                ->where('start_time', '>', $current_time)
+                                ->where('status', 'A')
+                                ->where(function ($q) {
+                                    $q->where('access', 'B')->orWhere('access', 'N');
+                                })
+                                ->orderBy('start_time', 'asc')
+                                ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 
+                                'description', 'remark', 'assembly_point']);
+                }
+                else {
+                    $activities = Activity::where('activity_date', $date)
+                                ->where('status', 'A')
+                                ->where(function ($q) {
+                                    $q->where('access', 'B')->orWhere('access', 'N');
+                                })
+                                ->orderBy('start_time', 'asc')
+                                ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 
+                                'description', 'remark', 'assembly_point']);
+                }
             }
             else {
-                $activities = Activity::where('activity_date', $date)->where('status', 'A')->orderBy('start_time', 'asc')->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark']);
+                //dont care about access
+
+                //if selected date is today, get only the onwards available activities
+                if($date == $today) {
+                    $activities = Activity::where('activity_date', $date)
+                    ->where('start_time', '>', $current_time)
+                    ->where('status', 'A')
+                    ->orderBy('start_time', 'asc')
+                    ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 
+                    'remark', 'assembly_point']);
+                }
+                else {
+                    $activities = Activity::where('activity_date', $date)
+                    ->where('status', 'A')
+                    ->orderBy('start_time', 'asc')
+                    ->get(['activity_id', 'activity_title', 'activity_date', 'start_time', 'end_time', 'duration', 'slot', 'description', 'remark', 'assembly_point']);
+                }
             }
-           
 
             if($activities) {
                 foreach($activities as $activity) {
