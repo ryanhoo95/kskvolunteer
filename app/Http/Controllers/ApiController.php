@@ -1707,7 +1707,7 @@ class ApiController extends Controller
                         ->where('status', 'A')
                         ->orderBy('start_time', 'asc')
                         ->get(['activity_id', 'activity_title', 'start_time', 'end_time', 
-                        'duration', 'slot', 'description', 'remark', 'activity_date']);
+                        'duration', 'slot', 'description', 'remark', 'activity_date', 'assembly_point']);
 
             if($activities) {
                 foreach($activities as $activity) {
@@ -1773,7 +1773,7 @@ class ApiController extends Controller
                         ->where('status', 'A')
                         ->orderBy('start_time', 'asc')
                         ->get(['activity_id', 'activity_title', 'start_time', 'end_time', 
-                        'duration', 'slot', 'description', 'remark', 'activity_date']);
+                        'duration', 'slot', 'description', 'remark', 'activity_date', 'assembly_point']);
            
 
             if($activities) {
