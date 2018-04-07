@@ -1401,7 +1401,8 @@ class ApiController extends Controller
                             ->select('invitation.invitation_id', 'invitation.activity_id', 'invitation.invited_by',
                             'invitation.invitation_code', 'activity.activity_title', 'activity.activity_date', 
                             'activity.start_time', 'activity.end_time', 'activity.slot', 'activity.description', 
-                            'activity.remark', 'user.full_name', 'user.profile_name', 'user.profile_image')
+                            'activity.remark', 'user.full_name', 'user.profile_name', 'user.profile_image',
+                            'activity.assembly_point', 'activity.access')
                             ->get();
 
             foreach($invitations as $invitation) {
@@ -1486,7 +1487,7 @@ class ApiController extends Controller
 
     //accept invitation
     public function acceptInvitation(Request $request) {
-        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id', 'usertype'])->first();
 
         $date = Carbon::parse($request->input('date'))->format('Y-m-d');
         $start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
@@ -1495,111 +1496,155 @@ class ApiController extends Controller
         $current_time = Carbon::now()->format('H:i:s');
 
         if($user) {
-            if (($date == $today && $start_time < $current_time) || $date < $today) {
-                $data = [
-                    'status' => 'fail',
-                    'message' => 'The activity has already passed.'
-                ];
+            $volunteerProfile = VolunteerProfile::where('user_id', $user->user_id)
+                                ->get(['total_volunteer_duration'])->first();
+
+            if($volunteerProfile->total_volunteer_duration > 0) {
+                $user->category = 'Regular';
             }
             else {
-                $invitation = Invitation::where('invitation_id', $request->input('invitation_id'))->get()->first();
+                $user->category = 'Newbie';
+            }
 
-                if($invitation) {
-                    //used to check for clashing
-                    $activities = Activity::where('activity_date', $date)->where(function ($p) use ($start_time, $end_time) {
-                        $p->where(function ($query) use ($start_time, $end_time) {
-                            $query->where('start_time', '>=', $start_time)->where('start_time', '<', $end_time);
-                        })
-                        ->orWhere(function ($query) use ($start_time, $end_time) {
-                            $query->where('start_time', '<', $start_time)->where('end_time', '<=', $end_time);
-                        })
-                        ->orWhere(function ($query) use ($start_time, $end_time) {
-                            $query->where('end_time', '>=', $start_time)->where('end_time', '<', $end_time);
-                        })
-                        ->orWhere(function ($query) use ($start_time, $end_time) {
-                            $query->where('start_time', $start_time)->where('end_time', $end_time);
-                        });
-                    })->get(['activity_id']);
+            $proceed = false;
 
-
-                    $clash = false;
-
-                    foreach($activities as $activityClash) {
-                        //get the participation
-                        $participationClash = Participation::where('activity_id', $activityClash->activity_id)->where('participant_id', $user->user_id)->where('status', 'J')->get()->first();
-        
-                        if($participationClash) {
-                            $clash = true;
-                            break;
-                        }
-                    }
-        
-                    if($clash) {
-                        $data = [
-                            'status' => 'fail',
-                            'message' => 'You have another participation which clash with this invitation.',
-                        ];
-                    }
-                    else {
-                        $activity = Activity::where('activity_id', $request->input('activity_id'))->where('status', 'A')->get()->first();
-        
-                        if($activity) {
-                            //get participation num
-                            $participation_num = Participation::where('activity_id', $request->input('activity_id'))->where(function ($q) {
-                                $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
-                            })->count();
-            
-                            //slot is full
-                            if($participation_num == $activity->slot) {
-                                $data = [
-                                    'status' => 'fail',
-                                    'message' => 'The slot for this activity is already full.'
-                                ];
-                            }
-                            else { //the activity is available
-                                //check whether got participation of this activity
-                                $hasParticipation = Participation::where('activity_id', $request->input('activity_id'))
-                                                    ->where('participant_id', $user->user_id)->get()->first();
-
-                                if($hasParticipation) {
-                                    $hasParticipation->status = 'J';
-                                    $hasParticipation->invitation_code = $request->input('invitation_code');
-                                    $hasParticipation->save();
-                                }
-                                else {
-                                    //create a new participation
-                                    $participation = new Participation;
-                                    $participation->participant_id = $user->user_id;
-                                    $participation->activity_id = $request->input('activity_id');
-                                    $participation->status = "J";
-                                    $participation->invitation_code = $request->input('invitation_code');
-                                    $participation->updated_by = $user->user_id;
-                                    $participation->save();
-                                }
-                                
-                                $invitation->status = 'A';
-                                $invitation->save();
-
-                                $data = [
-                                    'status' => 'success',
-                                    'message' => 'The invitation is accepted.'
-                                ];
-                                
-                            }
-                        }
-                        else {
-                            $data = [
-                                'status' => 'fail',
-                                'message' => 'Unable to accept the invitation. Please try again later.'
-                            ];
-                        }
-                    }
+            if($user->category == 'Regular' && AppHelper::getUserRole($user->usertype) == 'Volunteer') {
+                if($request->input('access') == 'R' || $request->input('access') == 'B') {
+                    $proceed = true;
                 }
                 else {
+                    $proceed = false;
+
                     $data = [
                         'status' => 'fail',
-                        'message' => 'Unable to accept the invitation. Please try again later.'
+                        'message' => 'This activity is only for newbie.'
                     ];
+                }
+            }
+            else if($user->category == 'Newbie' && AppHelper::getUserRole($user->usertype) == 'Volunteer') {
+                if($request->input('access') == 'N' || $request->input('access') == 'B') {
+                    $proceed = true;
+                }
+                else {
+                    $proceed = false;
+
+                    $data = [
+                        'status' => 'fail',
+                        'message' => 'This activity is only for regular volunteer.'
+                    ];
+                }
+            }
+            else {
+                $proceed = true;
+            }
+
+            if($proceed) {
+                if (($date == $today && $start_time < $current_time) || $date < $today) {
+                    $data = [
+                        'status' => 'fail',
+                        'message' => 'The activity has already passed.'
+                    ];
+                }
+                else {
+                    $invitation = Invitation::where('invitation_id', $request->input('invitation_id'))->get()->first();
+    
+                    if($invitation) {
+                        //used to check for clashing
+                        $activities = Activity::where('activity_date', $date)->where(function ($p) use ($start_time, $end_time) {
+                            $p->where(function ($query) use ($start_time, $end_time) {
+                                $query->where('start_time', '>=', $start_time)->where('start_time', '<', $end_time);
+                            })
+                            ->orWhere(function ($query) use ($start_time, $end_time) {
+                                $query->where('start_time', '<', $start_time)->where('end_time', '<=', $end_time);
+                            })
+                            ->orWhere(function ($query) use ($start_time, $end_time) {
+                                $query->where('end_time', '>=', $start_time)->where('end_time', '<', $end_time);
+                            })
+                            ->orWhere(function ($query) use ($start_time, $end_time) {
+                                $query->where('start_time', $start_time)->where('end_time', $end_time);
+                            });
+                        })->get(['activity_id']);
+    
+    
+                        $clash = false;
+    
+                        foreach($activities as $activityClash) {
+                            //get the participation
+                            $participationClash = Participation::where('activity_id', $activityClash->activity_id)->where('participant_id', $user->user_id)->where('status', 'J')->get()->first();
+            
+                            if($participationClash) {
+                                $clash = true;
+                                break;
+                            }
+                        }
+            
+                        if($clash) {
+                            $data = [
+                                'status' => 'fail',
+                                'message' => 'You have another participation which clash with this invitation.',
+                            ];
+                        }
+                        else {
+                            $activity = Activity::where('activity_id', $request->input('activity_id'))->where('status', 'A')->get()->first();
+            
+                            if($activity) {
+                                //get participation num
+                                $participation_num = Participation::where('activity_id', $request->input('activity_id'))->where(function ($q) {
+                                    $q->where('status', 'A')->orWhere('status', 'P')->orWhere('status', 'J');
+                                })->count();
+                
+                                //slot is full
+                                if($participation_num == $activity->slot) {
+                                    $data = [
+                                        'status' => 'fail',
+                                        'message' => 'The slot for this activity is already full.'
+                                    ];
+                                }
+                                else { //the activity is available
+                                    //check whether got participation of this activity
+                                    $hasParticipation = Participation::where('activity_id', $request->input('activity_id'))
+                                                        ->where('participant_id', $user->user_id)->get()->first();
+    
+                                    if($hasParticipation) {
+                                        $hasParticipation->status = 'J';
+                                        $hasParticipation->invitation_code = $request->input('invitation_code');
+                                        $hasParticipation->save();
+                                    }
+                                    else {
+                                        //create a new participation
+                                        $participation = new Participation;
+                                        $participation->participant_id = $user->user_id;
+                                        $participation->activity_id = $request->input('activity_id');
+                                        $participation->status = "J";
+                                        $participation->invitation_code = $request->input('invitation_code');
+                                        $participation->updated_by = $user->user_id;
+                                        $participation->save();
+                                    }
+                                    
+                                    $invitation->status = 'A';
+                                    $invitation->save();
+    
+                                    $data = [
+                                        'status' => 'success',
+                                        'message' => 'The invitation is accepted.'
+                                    ];
+                                    
+                                }
+                            }
+                            else {
+                                $data = [
+                                    'status' => 'fail',
+                                    'message' => 'Unable to accept the invitation. Please try again later.'
+                                ];
+                            }
+                        }
+                    }
+                    else {
+                        $data = [
+                            'status' => 'fail',
+                            'message' => 'Unable to accept the invitation. Please try again later.'
+                        ];
+                    }
                 }
             }
         }
