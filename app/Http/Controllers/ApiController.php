@@ -391,6 +391,15 @@ class ApiController extends Controller
                     $profile->gender = "Female";
                 }
 
+                $profile->allergy = $volunteerProfile->allergy;
+                $profile->allergy_remark = $volunteerProfile->allergy_remark;
+                if($volunteerProfile->allergy == "N") {
+                    $profile->allergyValue = "None";
+                }
+                else {
+                    $profile->allergyValue = $volunteerProfile->allergy_remark;
+                }
+
                 $profile->ic_passport = $user->ic_passport;
                 $profile->address = $user->address;
                 $profile->phone_no = $user->phone_no;
@@ -453,6 +462,8 @@ class ApiController extends Controller
                 $user->save();
 
                 //save volunteer profile data
+                $volunteerProfile->allergy = $request->input('allergy');
+                $volunteerProfile->allergy_remark = $request->input('allergy_remark');
                 $volunteerProfile->emergency_contact = $request->input('emergency_contact');
                 $volunteerProfile->emergency_name = $request->input('emergency_name');
                 $volunteerProfile->emergency_relation = $request->input('emergency_relation');
