@@ -61,7 +61,7 @@
                                 @else
                                     <table id="datatable" class="table table-bordered table-hover">
                                         <thead>
-                                            <th>Title</th>
+                                            <th>Template Name</th>
                                             <th>Start Time</th>
                                             <th>End Time</th>
                                             <th>Status</th>
@@ -70,7 +70,7 @@
                                         <tbody>
                                             @foreach ($data['activity_types'] as $activity_type)
                                                 <tr>
-                                                    <td><a href="/activity_type/{{ $activity_type->activity_type_id }}">{{ $activity_type->activity_title }}</a></td>
+                                                    <td><a href="/activity_type/{{ $activity_type->activity_type_id }}">{{ $activity_type->activity_type_name }}</a></td>
                                                     <td>{{ Carbon::parse($activity_type->start_time)->format('h:i A') }}</td>
                                                     <td>{{ Carbon::parse($activity_type->end_time)->format('h:i A') }}</td>
                                                     

@@ -62,7 +62,10 @@ class ActivityTypeController extends Controller
     public function store(Request $request) {
         //validation
         $rules = [
+            'activity_type_name' => 'required',
             'activity_title' => 'required',
+            'assembly_point' => 'required',
+            'access' => 'required',
             'start_time' => 'required|date_format:h:i A',
             'end_time' => 'required|date_format:h:i A|after:start_time',
             'description' => 'nullable|max:1000',
@@ -84,7 +87,10 @@ class ActivityTypeController extends Controller
         $remark = str_replace("\t", '', $remark);
 
         $activity_type = new ActivityType;
+        $activity_type->activity_type_name = $request->input('activity_type_name');
         $activity_type->activity_title = $request->input('activity_title');
+        $activity_type->assembly_point = $request->input('assembly_point');
+        $activity_type->access = $request->input('access');
         $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
         $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
         $activity_type->description = $description;
@@ -128,7 +134,10 @@ class ActivityTypeController extends Controller
         if($action == "update_info") {
             //validation
             $rules = [
+                'activity_type_name' => 'required',
                 'activity_title' => 'required',
+                'assembly_point' => 'required',
+                'access' => 'required',
                 'start_time' => 'required|date_format:h:i A',
                 'end_time' => 'required|date_format:h:i A|after:start_time',
                 'description' => 'nullable|max:1000',
@@ -149,7 +158,10 @@ class ActivityTypeController extends Controller
             $remark = str_replace("\t", '', $remark);
 
             $activity_type = ActivityType::find($id);
+            $activity_type->activity_type_name = $request->input('activity_type_name');
             $activity_type->activity_title = $request->input('activity_title');
+            $activity_type->assembly_point = $request->input('assembly_point');
+            $activity_type->access = $request->input('access');
             $activity_type->start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $activity_type->end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
             $activity_type->description = $description;

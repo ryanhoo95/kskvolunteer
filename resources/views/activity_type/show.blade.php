@@ -43,8 +43,30 @@
                             <div class="box-body no-padding">
                                 <table class="table">
                                     <tr>
+                                        <td style="width: 30%"><b>Template Name</b></td>
+                                        <td id="full_name" style="width: 70%">{{ $data['activity_type']->activity_type_name }}</td>
+                                    </tr>
+
+                                    <tr>
                                         <td style="width: 30%"><b>Activity Title</b></td>
                                         <td id="full_name" style="width: 70%">{{ $data['activity_type']->activity_title }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="width: 30%"><b>Assembly Point</b></td>
+                                        <td id="full_name" style="width: 70%">{{ $data['activity_type']->assembly_point }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><b>Who Can Join This Activity</b></td>
+                                    
+                                        @if ($data['activity_type']->access  == 'R')
+                                            <td>Regular</td>
+                                        @elseif($data['activity_type']->access  == 'N')
+                                            <td>Newbie</td>
+                                        @else
+                                            <td>Both</td>
+                                        @endif
                                     </tr>
 
                                     <tr>
