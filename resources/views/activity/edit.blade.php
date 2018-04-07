@@ -53,7 +53,7 @@
                                         <!--access -->
                                         <div class="form-group has-feedback {{ $errors->has('access') ? ' has-error' : '' }}">
                                             {{Form::label('access', 'Who Can Join This Activity <span class="text-danger">*</span>', [], false)}}
-                                            {{Form::select('access', ['R' => 'Regular', 'N' => 'Newbie', 'B' => 'Both'], $data['activity']->access, ['class' => 'form-control'])}}
+                                            {{Form::select('access', ['R' => 'Regular', 'N' => 'Newbie', 'B' => 'Both'], $data['activity']->access, ['class' => 'form-control', 'disabled' => true])}}
     
                                             @if ($errors->has('access'))
                                                 <span class="help-block">
