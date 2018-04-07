@@ -345,6 +345,8 @@ class ApiController extends Controller
 
         //save the volunteer profile
         $volunteerProfile = new VolunteerProfile;
+        $volunteerProfile->allergy = $request->input('allergy');
+        $volunteerProfile->allergy_remark = $request->input('allergy_remark');
         $volunteerProfile->emergency_contact = $request->input('emergency_contact');
         $volunteerProfile->emergency_name = $request->input('emergency_name');
         $volunteerProfile->emergency_relation = $request->input('emergency_relation');
