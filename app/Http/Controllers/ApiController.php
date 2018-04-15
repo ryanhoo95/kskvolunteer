@@ -1089,7 +1089,7 @@ class ApiController extends Controller
                             ->where('participation.status', 'J')
                             ->select('participation.participation_id', 'participation.activity_id', 'participation.invitation_code',
                             'activity.activity_title', 'activity.start_time', 'activity.end_time', 'activity.slot', 'activity.description',
-                            'activity.remark', 'activity.activity_date')
+                            'activity.remark', 'activity.activity_date', 'activity.assembly_point')
                             ->orderBy('activity.activity_date', 'asc')
                             ->orderBy('activity.start_time', 'asc')
                             ->get();
@@ -1689,7 +1689,7 @@ class ApiController extends Controller
                             ->where('activity.status', 'A')
                             ->select('participation.participation_id', 'participation.activity_id', 'participation.invitation_code',
                             'activity.activity_title', 'activity.start_time', 'activity.end_time', 'activity.slot', 'activity.description',
-                            'activity.remark', 'activity.activity_date', 'participation.status')
+                            'activity.remark', 'activity.activity_date', 'participation.status', 'activity.assembly_point')
                             ->orderBy('activity.activity_date', 'desc')
                             ->orderBy('activity.start_time', 'asc')
                             ->get();
