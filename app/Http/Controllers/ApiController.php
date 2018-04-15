@@ -13,6 +13,7 @@ use App\Activity;
 use App\ActivityType;
 use App\Participation;
 use App\Invitation;
+use App\Enquiry;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -2202,6 +2203,33 @@ class ApiController extends Controller
             }
             
             
+        }
+        else {
+            $data = [
+                'status' => 'invalid',
+                'message' => 'Invalid session.'
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    //get enquiry person
+    public function getEnquiryPersons(Request $request) {
+        $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
+
+        if($user) {
+            $enquiryPersons = DB::table('enquiry')
+            ->join('user', 'enquiry.user_id', '=', 'user.user_id')
+            ->where('enquiry.activity_id', $request->input('activity_id'))
+            ->where('enquiry.status', 'A')
+            ->select('user.user_id', 'user.full_name', 'user.phone_no')
+            ->get();
+
+            $data = [
+                'status' => 'success',
+                'data' => $enquiryPersons
+            ];
         }
         else {
             $data = [
