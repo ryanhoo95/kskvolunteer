@@ -153,6 +153,18 @@
                                                 </span>
                                             @endif
                                         </div>
+
+                                        <!-- enquiry person -->
+                                        <div class="form-group has-feedback {{ $errors->has('enquiry_person') ? ' has-error' : '' }}">
+                                            {{Form::label('enquiry_person', 'Enquiry Persons <span class="text-danger">*</span>', [], false)}}
+                                            {{Form::select('enquiry_person[]', $data['staffs'], Auth::user()->user_id, ['class' => 'form-control select2', 'multiple' => 'multiple', 'data-placeholder' => 'Select enquiry person'])}}
+    
+                                            @if ($errors->has('enquiry_person'))
+                                                <span class="help-block">
+                                                    *{{ $errors->first('enquiry_person') }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
 
                                     <div class="col-md-6">
@@ -185,7 +197,7 @@
 
                             <!-- box footer -->
                             <div class="box-footer">
-                                <a href="/activity_type" class="btn btn-warning pull-left">Cancel</a>
+                                <a href="/activity" class="btn btn-warning pull-left">Cancel</a>
                                 {{Form::submit('Submit', ['class' => 'btn btn-primary pull-right'])}}
                             </div>
                         {!! Form::close() !!}

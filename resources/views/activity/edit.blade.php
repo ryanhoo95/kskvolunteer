@@ -148,6 +148,18 @@
                                                 </span>
                                             @endif
                                         </div>
+
+                                        <!-- enquiry person -->
+                                        <div class="form-group has-feedback {{ $errors->has('enquiry_person') ? ' has-error' : '' }}">
+                                            {{Form::label('enquiry_person', 'Enquiry Persons <span class="text-danger">*</span>', [], false)}}
+                                            {{Form::select('enquiry_person[]', $data['staffs'], $data['selectedStaffs'], ['class' => 'form-control select2', 'multiple' => 'multiple', 'data-placeholder' => 'Select enquiry person'])}}
+    
+                                            @if ($errors->has('enquiry_person'))
+                                                <span class="help-block">
+                                                    *{{ $errors->first('enquiry_person') }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
 
                                     <div class="col-md-6">
@@ -197,6 +209,12 @@
                     CKEDITOR.replace('description');
                     CKEDITOR.replace('remark');
                     CKEDITOR.config.height = '120px';
+
+                    //get the data returend
+                    var rawData = '<?php echo json_encode($data, true); ?>';
+                    console.log(rawData);
+                    var data = JSON.parse(rawData);
+                    console.log(data);
                 })
             </script>
         @endsection

@@ -153,6 +153,9 @@
                     }
                 })
 
+                //Initialize Select2 Elements
+                $('.select2').select2()
+
                 //password strength meter
                 $('#password').password({
                     shortPass: 'The password is too short',

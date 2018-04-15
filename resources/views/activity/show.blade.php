@@ -98,6 +98,19 @@
                                     @endif
                                 </tr>
 
+                                @if (count($data['activity']->enquiryPersons) > 0)
+                                    <tr>
+                                        <td><b>Enquiry Persons</b></td>
+                                        <td>
+                                            <ol>
+                                                @foreach ($data['activity']->enquiryPersons as $enquiryPerson)
+                                                    <li><a href="/user/staff/{{ $enquiryPerson->user_id }}/profile">{{ $enquiryPerson->full_name }}</a></li>
+                                                @endforeach
+                                            </ol>
+                                        </td>
+                                    </tr>
+                                @endif
+
                                 <tr>
                                     <td><b>Creator</b></td>
                                     <td><a href="/user/staff/{{ $data['activity']->created_by }}/profile">{{ $data['activity']->creator }}</a></td>

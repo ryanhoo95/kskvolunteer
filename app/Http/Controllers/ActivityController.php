@@ -9,7 +9,9 @@ use App\Activity;
 use App\ActivityType;
 use App\Participation;
 use App\User;
+use App\Enquiry;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class ActivityController extends Controller
 {
@@ -53,11 +55,22 @@ class ActivityController extends Controller
     public function show($id) {
         $activity = Activity::findOrFail($id);
 
-        $created_by = $activity->created_by;
+        if($activity) {
+            $created_by = $activity->created_by;
 
-        $user = User::where('user_id', $created_by)->get(['profile_name'])->first();
+            $user = User::where('user_id', $created_by)->get(['full_name'])->first();
 
-        $activity->creator = $user->profile_name;
+            $activity->creator = $user->full_name;
+
+            $enquiryPersons = DB::table('enquiry')
+                                ->join('user', 'enquiry.user_id', 'user.user_id')
+                                ->where('enquiry.activity_id', $activity->activity_id)
+                                ->where('enquiry.status', 'A')
+                                ->select('user.user_id', 'user.full_name')
+                                ->get();
+            
+            $activity->enquiryPersons = $enquiryPersons;
+        }        
 
         $data = [
             'activity' => $activity,
@@ -81,8 +94,18 @@ class ActivityController extends Controller
             $activity_type->remark = str_replace("\"", '\\"', $activity_type->remark);
         }
 
+        //get all the staff
+        $staffs = User::where('usertype', '<', 4)->where('status', 'A')->orderBy('full_name', 'asc')->get(['user_id', 'full_name']);
+
+        $staffOptions = array();
+
+        foreach($staffs as $staff) {
+            $staffOptions += array($staff->user_id => $staff->full_name);
+        }
+
         $data = [
-            'activity_types' => $activity_types
+            'activity_types' => $activity_types,
+            'staffs' => $staffOptions
         ];
 
         return view('activity.create')->with('data', $data);
@@ -105,12 +128,14 @@ class ActivityController extends Controller
             'start_time' => 'required|date_format:h:i A',
             'end_time' => 'required|date_format:h:i A|after:start_time',
             'assembly_point' => 'required',
+            'enquiry_person' => 'required',
             'description' => 'nullable|max:1000',
             'remark' => 'nullable|max:1000',
         ];
 
         $messages = [
             'required' => 'Please fill out this field.',
+            'enquiry_person.required' => 'Please select enquiry person.', 
             'slot.numeric' => 'The slot can only contain numbers.',
             'start_time.date_format' => 'Invalid time format.',
             'end_time.date_format' => 'Invalid time format.',
@@ -160,6 +185,19 @@ class ActivityController extends Controller
             $activity->updated_by = Auth::user()->user_id;
 
             $activity->save();
+
+            $insertedId = $activity->activity_id;
+
+            //save the enquiry person
+            $enquiryPersons = $request->input('enquiry_person');
+            foreach($enquiryPersons as $enquiryPerson) {
+                $enquiry = new Enquiry;
+                $enquiry->activity_id = $insertedId;
+                $enquiry->user_id = $enquiryPerson;
+                $enquiry->status = 'A';
+
+                $enquiry->save();
+            }
         }
 
         return redirect('/activity')->with('success', 'Activity(s) is created.');
@@ -189,8 +227,29 @@ class ActivityController extends Controller
     {
         $activity = Activity::findOrFail($id);
 
+        //get all the staff
+        $staffs = User::where('usertype', '<', 4)->where('status', 'A')->orderBy('full_name', 'asc')->get(['user_id', 'full_name']);
+
+        $staffOptions = array();
+
+        foreach($staffs as $staff) {
+            $staffOptions += array($staff->user_id => $staff->full_name);
+        }
+
+        //get selected staffs
+        $selectedStaffs = Enquiry::where('activity_id', $activity->activity_id)->where('status', 'A')
+                            ->get(['user_id']);
+
+        $selectedStaffsId = array();
+
+        foreach($selectedStaffs as $selectedStaff) {
+            $selectedStaffsId[] = $selectedStaff->user_id;
+        }
+
         $data = [
             'activity' => $activity,
+            'staffs' => $staffOptions,
+            'selectedStaffs' => $selectedStaffsId
         ];
 
         return view('activity.edit')->with('data', $data);
@@ -218,12 +277,14 @@ class ActivityController extends Controller
                 'start_time' => 'required|date_format:h:i A',
                 'end_time' => 'required|date_format:h:i A|after:start_time',
                 'assembly_point' => 'required',
+                'enquiry_person' => 'required',
                 'description' => 'nullable|max:1000',
                 'remark' => 'nullable|max:1000',
             ];
 
             $messages = [
                 'required' => 'Please fill out this field.',
+                'enquiry_person.required' => 'Please select enquiry person.', 
                 'slot.numeric' => 'The slot can only contain numbers.',
                 'date' => 'Invalid date format.',
                 'start_time.date_format' => 'Invalid time format.',
@@ -255,6 +316,25 @@ class ActivityController extends Controller
             $activity->remark = $remark;
             $activity->updated_by = Auth::user()->user_id;
             $activity->save();
+
+            //update enquiry person
+            $enquiries = Enquiry::where('activity_id', $id)->where('status', 'A')->get();
+
+            foreach($enquiries as $enquiry) {
+                $enquiry->status = 'I';
+                $enquiry->save();
+            }
+
+            $inputEnquiryPersons = $request->input('enquiry_person');
+
+            foreach($inputEnquiryPersons as $inputEnquiryPerson) {
+                $enquiry = new Enquiry;
+                $enquiry->activity_id = $id;
+                $enquiry->user_id = $inputEnquiryPerson;
+                $enquiry->status = 'A';
+
+                $enquiry->save();
+            }
             
             return redirect('/activity/'.$id)->with('success', 'Activity has been updated.');
         }
