@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'KSK Volunteer') }}</title>
 
     <!-- Styles -->
     <link rel="stylesheet" href="{{asset("css/admin-lte/bower_components/bootstrap/dist/css/bootstrap.min.css")}}">
