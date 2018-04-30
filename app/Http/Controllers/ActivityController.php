@@ -16,6 +16,16 @@ use Illuminate\Support\Facades\DB;
 class ActivityController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a listing of activities.
      *
      * @return \Illuminate\Http\Response
