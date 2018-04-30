@@ -85,7 +85,7 @@
                                                         <div class="input-group-addon">
                                                             <i class="fa fa-calendar"></i>
                                                         </div>
-                                                        {{Form::text('date', Carbon::parse($data['activity']->activity_date)->format('d M Y'), ['class' => 'form-control pull-right', 'placeholder' => 'Enter date', 'id' => 'datepicker_min'])}}
+                                                        {{Form::text('date', Carbon::parse($data['activity']->activity_date)->format('d M Y'), ['class' => 'form-control pull-right', 'placeholder' => 'Enter date', 'id' => 'datepicker_min_tomorrow'])}}
                                                     </div>
                 
                                                     @if ($errors->has('date'))

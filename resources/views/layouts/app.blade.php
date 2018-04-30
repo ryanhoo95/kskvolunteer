@@ -138,6 +138,13 @@
                     format: 'dd M yyyy',
                 })
 
+                //date picker min tomorrow
+                $('#datepicker_min_tomorrow').datepicker({
+                    startDate: tomorrow,
+                    autoclose: true,
+                    format: 'dd M yyyy',
+                })
+
                 //Timepicker
                 $('.timepicker').timepicker({
                     showInputs: false
