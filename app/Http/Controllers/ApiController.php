@@ -916,6 +916,8 @@ class ApiController extends Controller
         $date = Carbon::parse($request->input('date'))->format('Y-m-d');
         $start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
         $end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+        $today = Carbon::today()->format('Y-m-d');
+        $current_time = Carbon::now()->format('H:i:s');
         // $start = Carbon::parse($request->input('date')." ".$request->input('start_time'));
         // $end = Carbon::parse($request->input('date')." ".$request->input('end_time'));
 
@@ -973,41 +975,50 @@ class ApiController extends Controller
                         ];
                     }
                     else { //the activity is available
-                        if($request->input('participation_id') == "None") {
-                            //create a new participation
-                            $participation = new Participation;
-                            $participation->participant_id = $user->user_id;
-                            $participation->activity_id = $request->input('activity_id');
-                            $participation->status = "J";
-                            $participation->invitation_code = $user->user_id."INV_".time();
-                            $participation->updated_by = $user->user_id;
-                            $participation->save();
-            
+                        //check whether the activity is already started
+                        if (($date == $today && $start_time < $current_time) || $date < $today) {
                             $data = [
-                                'status' => 'success',
-                                'message' => 'You have joined the selected activity.'
+                                'status' => 'fail',
+                                'message' => 'This activity has already passed.'
                             ];
                         }
-                        else {
-                            //update the participation
-                            $participation = Participation::where('participation_id', $request->input('participation_id'))->get()->first();
-            
-                            if($participation) {
+                        else { //activity havent start
+                            if($request->input('participation_id') == "None") {
+                                //create a new participation
+                                $participation = new Participation;
+                                $participation->participant_id = $user->user_id;
+                                $participation->activity_id = $request->input('activity_id');
                                 $participation->status = "J";
                                 $participation->invitation_code = $user->user_id."INV_".time();
                                 $participation->updated_by = $user->user_id;
                                 $participation->save();
-            
+                
                                 $data = [
                                     'status' => 'success',
                                     'message' => 'You have joined the selected activity.'
                                 ];
                             }
                             else {
-                                $data = [
-                                    'status' => 'fail',
-                                    'message' => 'Unable to join this activity. Please try again later.'
-                                ];
+                                //update the participation
+                                $participation = Participation::where('participation_id', $request->input('participation_id'))->get()->first();
+                
+                                if($participation) {
+                                    $participation->status = "J";
+                                    $participation->invitation_code = $user->user_id."INV_".time();
+                                    $participation->updated_by = $user->user_id;
+                                    $participation->save();
+                
+                                    $data = [
+                                        'status' => 'success',
+                                        'message' => 'You have joined the selected activity.'
+                                    ];
+                                }
+                                else {
+                                    $data = [
+                                        'status' => 'fail',
+                                        'message' => 'Unable to join this activity. Please try again later.'
+                                    ];
+                                }
                             }
                         }
                     }
@@ -1034,36 +1045,50 @@ class ApiController extends Controller
     public function withdrawActivity(Request $request) {
         $user = User::where('api_token', $request->input('api_token'))->get(['user_id'])->first();
 
+        $date = Carbon::parse($request->input('date'))->format('Y-m-d');
+        $start_time = Carbon::parse($request->input('start_time'))->format('H:i:s');
+        $end_time = Carbon::parse($request->input('end_time'))->format('H:i:s');
+        $today = Carbon::today()->format('Y-m-d');
+        $current_time = Carbon::now()->format('H:i:s');
+
         if($user) {
-            //update participation
-            $participation = Participation::where('participation_id', $request->input('participation_id'))->get()->first();
-
-            if($participation) {
-                if($participation->status == 'A' || $participation->status == 'P') {
-                    $data = [
-                        'status' => 'fail',
-                        'message' => 'Your attendance had been recorded, cannot withdraw from this activity anymore.'
-                    ];
-                }
-                else {
-                    $participation->status = "W";
-                    $participation->invitation_code = $user->user_id.'INV_'.time();
-                    $participation->updated_by = $user->user_id;
-                    $participation->save();
-
-                    $data = [
-                        'status' => 'success',
-                        'message' => 'You have withdrawn from the selected activity.'
-                    ];
-                }
-            }
-            else {
+            //check whether the activity already passed
+            if (($date == $today && $start_time < $current_time) || $date < $today) {
                 $data = [
                     'status' => 'fail',
-                    'message' => 'Unable to withdraw from the activity. Please try again later.'
+                    'message' => 'This activity has already passed.'
                 ];
             }
-            
+            else {
+                //update participation
+                $participation = Participation::where('participation_id', $request->input('participation_id'))->get()->first();
+
+                if($participation) {
+                    if($participation->status == 'A' || $participation->status == 'P') {
+                        $data = [
+                            'status' => 'fail',
+                            'message' => 'Your attendance had been recorded, cannot withdraw from this activity anymore.'
+                        ];
+                    }
+                    else {
+                        $participation->status = "W";
+                        $participation->invitation_code = $user->user_id.'INV_'.time();
+                        $participation->updated_by = $user->user_id;
+                        $participation->save();
+
+                        $data = [
+                            'status' => 'success',
+                            'message' => 'You have withdrawn from the selected activity.'
+                        ];
+                    }
+                }
+                else {
+                    $data = [
+                        'status' => 'fail',
+                        'message' => 'Unable to withdraw from the activity. Please try again later.'
+                    ];
+                }
+            }
         }
         else {
             $data = [
@@ -1557,7 +1582,7 @@ class ApiController extends Controller
                 if (($date == $today && $start_time < $current_time) || $date < $today) {
                     $data = [
                         'status' => 'fail',
-                        'message' => 'The activity has already passed.'
+                        'message' => 'This activity has already passed.'
                     ];
                 }
                 else {
