@@ -101,6 +101,14 @@
                                 <!-- display the volunteer profile if this user is a volunteer -->
                                 @if (AppHelper::getUserRole($data['user']->usertype) == "Volunteer" && $data['volunteer_profile'])
                                     <tr>
+                                        <td><b>Allergy</b></td>
+                                        @if ($data['volunteer_profile']->allergy == 'N')
+                                            <td>None</td>
+                                        @else
+                                            <td>{{ $data['volunteer_profile']->allergy_remark }}</td>
+                                        @endif
+                                    </tr>
+                                    <tr>
                                         <td><b>Emergency Contact Person</b></td>
                                         <td>{{ $data['volunteer_profile']->emergency_name }} ({{ $data['volunteer_profile']->emergency_relation }})</td>
                                     </tr>
