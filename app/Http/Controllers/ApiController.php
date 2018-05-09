@@ -927,10 +927,10 @@ class ApiController extends Controller
                 $query->where('start_time', '>=', $start_time)->where('start_time', '<', $end_time);
             })
             ->orWhere(function ($query) use ($start_time, $end_time) {
-                $query->where('start_time', '<', $start_time)->where('end_time', '<=', $end_time);
+                $query->where('start_time', '<', $start_time)->where('end_time', '<=', $end_time)->where('end_time', '>', $start_time);
             })
             ->orWhere(function ($query) use ($start_time, $end_time) {
-                $query->where('end_time', '>=', $start_time)->where('end_time', '<', $end_time);
+                $query->where('end_time', '>', $start_time)->where('end_time', '<', $end_time);
             })
             ->orWhere(function ($query) use ($start_time, $end_time) {
                 $query->where('start_time', $start_time)->where('end_time', $end_time);
