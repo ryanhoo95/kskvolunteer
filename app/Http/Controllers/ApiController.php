@@ -290,28 +290,28 @@ class ApiController extends Controller
     //register
     public function register(Request $request) {
         //check for unique email
-        // $userByEmail = User::where('email', $request->input('email'))->get()->first();
+        $userByEmail = User::where('email', $request->input('email'))->get()->first();
 
-        // if($userByEmail) {
-        //     $data = [
-        //         'status' => 'fail',
-        //         'message' => 'This email is already taken. Please use another email.'
-        //     ];
+        if($userByEmail) {
+            $data = [
+                'status' => 'fail',
+                'message' => 'This email is already taken.'
+            ];
 
-        //     return response()->json($data);
-        // }
+            return response()->json($data);
+        }
 
         // //check for unique ic passport
-        // $userByIc = User::where('ic_passport', $request->input('ic_passport'))->get()->first();
+        $userByIc = User::where('ic_passport', $request->input('ic_passport'))->get()->first();
 
-        // if($userByIc) {
-        //     $data = [
-        //         'status' => 'fail',
-        //         'message' => 'This IC or passport no. is already taken. Please contact administrator for assistance.'
-        //     ];
+        if($userByIc) {
+            $data = [
+                'status' => 'fail',
+                'message' => 'This IC or passport no. is already taken.'
+            ];
 
-        //     return response()->json($data);
-        // }
+            return response()->json($data);
+        }
 
         //format ic passport
         $ic_passport = $request->input('ic_passport');
